@@ -1,0 +1,16 @@
+[
+  {
+    "id": 4,
+    "slug": "api-outage",
+    "title": "API outage",
+    "summary": "Requests are intermittently failing.",
+    "status": "published",
+    "severity": "major_outage",
+    "published_at": "2026-03-22T08:45:00Z",
+    "resolved_at": null,
+    "started_at": "2026-03-22T08:45:00Z",
+    "affected_service_ids": [1],
+    "affected_component_ids": [7],
+    "latest_update": "The team is investigating elevated error rates."
+  }
+]

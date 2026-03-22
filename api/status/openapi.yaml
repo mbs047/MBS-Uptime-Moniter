@@ -1,0 +1,237 @@
+openapi: 3.1.0
+info:
+  title: MBS Uptime Monitor Status API
+  version: 1.0.0
+  description: Public read-only status endpoints plus subscriber signup for the status application.
+servers:
+  - url: https://example.com
+paths:
+  /api/status/summary:
+    get:
+      summary: Get the overall public status summary
+      responses:
+        '200':
+          description: Current summary payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusSummary'
+  /api/status/services:
+    get:
+      summary: Get public services and component health
+      responses:
+        '200':
+          description: Public services payload
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+  /api/status/incidents:
+    get:
+      summary: Get published public incidents
+      responses:
+        '200':
+          description: Published incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Incident'
+  /api/status/subscribers:
+    post:
+      summary: Create or refresh a subscriber confirmation flow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriberRequest'
+      responses:
+        '200':
+          description: Neutral confirmation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriberResponse'
+components:
+  schemas:
+    StatusSummary:
+      type: object
+      required:
+        - overall_status
+        - generated_at
+        - active_incident_count
+        - affected_component_count
+        - uptime_window_days
+        - brand
+      properties:
+        overall_status:
+          type: string
+          enum: [operational, degraded, partial_outage, major_outage, maintenance]
+        generated_at:
+          type: string
+          format: date-time
+        active_incident_count:
+          type: integer
+        affected_component_count:
+          type: integer
+        uptime_window_days:
+          type: integer
+        brand:
+          type: object
+          required: [name, tagline, support_email]
+          properties:
+            name:
+              type: string
+            tagline:
+              type: string
+              nullable: true
+            support_email:
+              type: string
+              nullable: true
+    Service:
+      type: object
+      required:
+        - id
+        - name
+        - slug
+        - status
+        - components
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [operational, degraded, partial_outage, major_outage, maintenance]
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+    Component:
+      type: object
+      required:
+        - id
+        - display_name
+        - status
+        - uptime_90d_percent
+        - uptime_bars
+        - active_incidents
+      properties:
+        id:
+          type: integer
+        display_name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [operational, degraded, partial_outage, major_outage, maintenance]
+        uptime_90d_percent:
+          type: number
+          format: float
+        uptime_bars:
+          type: array
+          items:
+            $ref: '#/components/schemas/UptimeBar'
+        active_incidents:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentReference'
+    UptimeBar:
+      type: object
+      required: [day, state, percentage]
+      properties:
+        day:
+          type: string
+          format: date
+        state:
+          type: string
+          enum: [operational, degraded, partial_outage, major_outage, maintenance, no_data]
+        percentage:
+          type: number
+          format: float
+          nullable: true
+    IncidentReference:
+      type: object
+      required: [slug, title, severity]
+      properties:
+        slug:
+          type: string
+        title:
+          type: string
+        severity:
+          type: string
+          enum: [degraded, partial_outage, major_outage, maintenance]
+    Incident:
+      type: object
+      required:
+        - id
+        - slug
+        - title
+        - status
+        - severity
+        - affected_service_ids
+        - affected_component_ids
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, published, resolved]
+        severity:
+          type: string
+          enum: [degraded, partial_outage, major_outage, maintenance]
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        affected_service_ids:
+          type: array
+          items:
+            type: integer
+        affected_component_ids:
+          type: array
+          items:
+            type: integer
+        latest_update:
+          type: string
+          nullable: true
+    SubscriberRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+    SubscriberResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
