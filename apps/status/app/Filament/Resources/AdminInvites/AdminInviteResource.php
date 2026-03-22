@@ -11,6 +11,7 @@ use App\Mail\AdminInviteMail;
 use App\Models\AdminInvite;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -133,9 +134,14 @@ class AdminInviteResource extends Resource
                 //
             ])
             ->recordActions([
-                static::makeResendInviteAction(),
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    static::makeResendInviteAction(),
+                    ViewAction::make(),
+                    EditAction::make(),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                    ->button(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

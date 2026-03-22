@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\AdminInvites\Pages;
 
 use App\Filament\Resources\AdminInvites\AdminInviteResource;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Support\Icons\Heroicon;
 
 class ViewAdminInvite extends ViewRecord
 {
@@ -15,8 +17,13 @@ class ViewAdminInvite extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            AdminInviteResource::makeResendInviteAction(),
-            EditAction::make(),
+            ActionGroup::make([
+                AdminInviteResource::makeResendInviteAction(),
+                EditAction::make(),
+            ])
+                ->label('Actions')
+                ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                ->button(),
         ];
     }
 }
