@@ -9,6 +9,7 @@ use App\Filament\Resources\Incidents\Pages\EditIncident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
 use App\Filament\Resources\Incidents\Pages\ViewIncident;
 use App\Models\Incident;
+use App\Support\Filament\FormActions;
 use App\Support\Filament\FormDefaults;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -63,7 +64,8 @@ class IncidentResource extends Resource
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Used in the public incident URL. Keep it short and stable.'),
+                            ->helperText('Used in the public incident URL. Keep it short and stable. Use the sparkles action to generate it from the incident title.')
+                            ->suffixAction(FormActions::makeGenerateSlugAction('title'), isInline: true),
                         Select::make('status')
                             ->options(static::getStatusOptions())
                             ->default(IncidentStatus::Draft->value)

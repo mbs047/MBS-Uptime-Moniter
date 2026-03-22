@@ -8,6 +8,7 @@ use App\Filament\Resources\Services\Pages\EditService;
 use App\Filament\Resources\Services\Pages\ListServices;
 use App\Filament\Resources\Services\Pages\ViewService;
 use App\Models\Service;
+use App\Support\Filament\FormActions;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -60,7 +61,8 @@ class ServiceResource extends Resource
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Used in stable internal references and should usually mirror the public service name.'),
+                            ->helperText('Used in stable internal references and should usually mirror the public service name. Use the sparkles action to generate it from the service name.')
+                            ->suffixAction(FormActions::makeGenerateSlugAction('name'), isInline: true),
                         Textarea::make('description')
                             ->rows(3)
                             ->columnSpanFull()
