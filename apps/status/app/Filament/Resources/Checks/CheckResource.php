@@ -58,7 +58,7 @@ class CheckResource extends Resource
                 Wizard::make([
                     Step::make('Scope')
                         ->description('Choose what you are checking and how it should appear to operators.')
-                        ->icon(Heroicon::OutlinedSquares2X2)
+                        ->icon(Heroicon::OutlinedSquares2x2)
                         ->schema([
                             Section::make('Check identity')
                                 ->schema([

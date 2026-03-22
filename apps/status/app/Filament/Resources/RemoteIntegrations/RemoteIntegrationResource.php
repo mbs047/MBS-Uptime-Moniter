@@ -51,7 +51,7 @@ class RemoteIntegrationResource extends Resource
                 Wizard::make([
                     Step::make('Application')
                         ->description('Start with the Laravel app you want this monitor to own and sync.')
-                        ->icon(Heroicon::OutlinedSquares2X2)
+                        ->icon(Heroicon::OutlinedSquares2x2)
                         ->schema([
                             Section::make('Remote application')
                                 ->schema([
