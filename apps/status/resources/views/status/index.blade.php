@@ -38,7 +38,9 @@
 
             <nav class="status-nav" aria-label="Status page">
                 <button type="button" class="status-nav__link status-nav__button" data-open-subscribe-modal>Subscribe to updates</button>
-                <span class="status-nav__stamp">Updated {{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}</span>
+                <span class="status-nav__stamp" data-relative-time="{{ $summary['generated_at'] }}" data-relative-prefix="Updated">
+                    Updated {{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}
+                </span>
             </nav>
         </header>
 
@@ -59,7 +61,6 @@
                     <aside class="status-overview__panel" aria-label="Current status snapshot">
                         <div class="status-overview__panel-header">
                             <div>
-                                <span class="status-eyebrow">Live snapshot</span>
                                 <p class="panel-copy">A compact operational view of the public estate right now.</p>
                             </div>
                             <x-status-badge :status="$summary['overall_status']" />
@@ -86,7 +87,9 @@
 
                             <div class="status-overview__stat">
                                 <span>Last updated</span>
-                                <strong>{{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}</strong>
+                                <strong data-relative-time="{{ $summary['generated_at'] }}">
+                                    {{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}
+                                </strong>
                                 <small>status snapshot generated</small>
                             </div>
                         </div>
@@ -297,9 +300,52 @@
             const modal = document.querySelector('[data-subscribe-modal]');
             const openButtons = document.querySelectorAll('[data-open-subscribe-modal]');
             const closeButtons = document.querySelectorAll('[data-close-subscribe-modal]');
+            const relativeTimeNodes = document.querySelectorAll('[data-relative-time]');
             const form = document.querySelector('[data-subscriber-form]');
             const feedback = document.querySelector('[data-subscriber-feedback]');
             const emailField = document.querySelector('#status-email');
+
+            const formatRelativeTime = (value) => {
+                const target = new Date(value);
+
+                if (Number.isNaN(target.getTime())) {
+                    return '';
+                }
+
+                const diffInSeconds = Math.round((target.getTime() - Date.now()) / 1000);
+                const absoluteSeconds = Math.abs(diffInSeconds);
+
+                if (absoluteSeconds < 45) {
+                    return 'just now';
+                }
+
+                const formatter = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+                const intervals = [
+                    ['year', 60 * 60 * 24 * 365],
+                    ['month', 60 * 60 * 24 * 30],
+                    ['week', 60 * 60 * 24 * 7],
+                    ['day', 60 * 60 * 24],
+                    ['hour', 60 * 60],
+                    ['minute', 60],
+                ];
+
+                for (const [unit, seconds] of intervals) {
+                    if (absoluteSeconds >= seconds) {
+                        return formatter.format(Math.round(diffInSeconds / seconds), unit);
+                    }
+                }
+
+                return formatter.format(diffInSeconds, 'second');
+            };
+
+            const refreshRelativeTimes = () => {
+                relativeTimeNodes.forEach((node) => {
+                    const relative = formatRelativeTime(node.dataset.relativeTime ?? '');
+                    const prefix = node.dataset.relativePrefix ?? '';
+
+                    node.textContent = prefix && relative ? `${prefix} ${relative}` : relative;
+                });
+            };
 
             const openModal = () => {
                 if (!modal) return;
@@ -329,6 +375,9 @@
                     closeModal();
                 }
             });
+
+            refreshRelativeTimes();
+            window.setInterval(refreshRelativeTimes, 60_000);
 
             if (!form || !feedback) return;
 
