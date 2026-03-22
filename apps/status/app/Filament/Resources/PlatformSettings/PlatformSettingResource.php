@@ -49,6 +49,10 @@ class PlatformSettingResource extends Resource
                 TextInput::make('mail_from_address')
                     ->email()
                     ->maxLength(255),
+                TextInput::make('probe_registration_token')
+                    ->password()
+                    ->revealable()
+                    ->helperText('Bearer token that package-enabled Laravel apps must use when calling the private registration API.'),
                 TextInput::make('seo_title')
                     ->maxLength(255),
                 Textarea::make('seo_description')
@@ -75,6 +79,8 @@ class PlatformSettingResource extends Resource
             ->components([
                 TextEntry::make('brand_name'),
                 TextEntry::make('support_email'),
+                TextEntry::make('probe_registration_token')
+                    ->placeholder('Not configured'),
                 TextEntry::make('uptime_window_days'),
                 TextEntry::make('raw_run_retention_days'),
             ]);
@@ -89,6 +95,9 @@ class PlatformSettingResource extends Resource
                     ->searchable(),
                 TextColumn::make('uptime_window_days')
                     ->label('Window'),
+                TextColumn::make('probe_registration_token')
+                    ->label('Push token')
+                    ->formatStateUsing(fn (?string $state) => filled($state) ? 'Configured' : 'Missing'),
             ])
             ->filters([
                 //
