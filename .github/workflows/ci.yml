@@ -86,7 +86,7 @@ jobs:
           coverage: none
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.composer/cache/files
           key: ${{ runner.os }}-probe-composer-${{ matrix.php }}-${{ matrix.laravel }}-${{ hashFiles('packages/laravel-status-probe/composer.json') }}
