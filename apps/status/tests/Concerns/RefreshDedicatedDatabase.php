@@ -41,7 +41,7 @@ trait RefreshDedicatedDatabase
         $databasePath = $this->resolveDedicatedTestingDatabasePath();
         $primaryDatabasePath = $this->primaryDatabasePath();
 
-        if (realpath($databasePath) === realpath($primaryDatabasePath)) {
+        if ($this->normalizePath($databasePath) === $this->normalizePath($primaryDatabasePath)) {
             throw new RuntimeException('Tests cannot run against database/database.sqlite. A dedicated test database is required.');
         }
 
@@ -74,7 +74,7 @@ trait RefreshDedicatedDatabase
             throw new RuntimeException('Tests must use the sqlite connection while running in the testing environment.');
         }
 
-        if (realpath($configuredDatabasePath) === realpath($this->primaryDatabasePath())) {
+        if ($this->normalizePath($configuredDatabasePath) === $this->normalizePath($this->primaryDatabasePath())) {
             throw new RuntimeException('Tests cannot refresh the working application database. PHPUnit must use a dedicated sqlite file under database/testing.');
         }
     }
