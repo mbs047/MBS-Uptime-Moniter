@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\RemoteIntegrations\Pages;
 
 use App\Filament\Resources\RemoteIntegrations\RemoteIntegrationResource;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Support\Icons\Heroicon;
 
 class ViewRemoteIntegration extends ViewRecord
 {
@@ -15,8 +17,13 @@ class ViewRemoteIntegration extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            RemoteIntegrationResource::makeSyncNowAction(),
-            EditAction::make(),
+            ActionGroup::make([
+                RemoteIntegrationResource::makeSyncNowAction(),
+                EditAction::make(),
+            ])
+                ->label('Actions')
+                ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                ->button(),
         ];
     }
 }

@@ -4,10 +4,12 @@ namespace App\Filament\Resources\RemoteIntegrations\Pages;
 
 use App\Filament\Resources\RemoteIntegrations\RemoteIntegrationResource;
 use App\Services\RemoteIntegrations\RemoteIntegrationSyncService;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 
 class EditRemoteIntegration extends EditRecord
 {
@@ -18,9 +20,14 @@ class EditRemoteIntegration extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            RemoteIntegrationResource::makeSyncNowAction(),
-            DeleteAction::make(),
+            ActionGroup::make([
+                ViewAction::make(),
+                RemoteIntegrationResource::makeSyncNowAction(),
+                DeleteAction::make(),
+            ])
+                ->label('Actions')
+                ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                ->button(),
         ];
     }
 

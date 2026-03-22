@@ -13,6 +13,7 @@ use App\Models\RemoteIntegration;
 use App\Services\RemoteIntegrations\RemoteIntegrationSyncService;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -231,10 +232,15 @@ class RemoteIntegrationResource extends Resource
                     ->placeholder('Never synced'),
             ])
             ->recordActions([
-                static::makeSyncNowAction(),
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    static::makeSyncNowAction(),
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                    ->button(),
             ]);
     }
 
