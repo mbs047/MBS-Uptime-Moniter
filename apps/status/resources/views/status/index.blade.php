@@ -153,66 +153,73 @@
                             </div>
                         </div>
 
-                        <div class="service-uptime">
-                            <div class="service-uptime__header">
-                                <span class="service-uptime__label">90-day service uptime</span>
-                                <span class="service-uptime__hint">Hover a bar to inspect that day.</span>
-                            </div>
-
-                            <div class="service-uptime__track" aria-label="90 day service uptime history">
-                                @foreach ($service['uptime_bars'] as $bar)
-                                    <div class="service-uptime__cell">
-                                        <span
-                                            class="service-uptime__bar service-uptime__bar--{{ $bar['state'] }}"
-                                            title="{{ $bar['date_label'] }}{{ $bar['percentage'] !== null ? ': '.number_format($bar['percentage'], 2).'%' : ': no data' }}"
-                                        ></span>
-
-                                        <div class="service-uptime__tooltip" role="tooltip">
-                                            <p class="service-uptime__tooltip-date">{{ $bar['date_label'] }}</p>
-                                            <p class="service-uptime__tooltip-stat">
-                                                @if ($bar['percentage'] !== null)
-                                                    {{ number_format($bar['percentage'], 2) }}% uptime
-                                                @else
-                                                    No uptime data recorded
-                                                @endif
-                                            </p>
-
-                                            <div class="service-uptime__tooltip-list">
-                                                @foreach ($bar['messages'] as $message)
-                                                    <div class="service-uptime__tooltip-item">
-                                                        <span class="service-uptime__tooltip-dot service-uptime__tooltip-dot--{{ $message['severity'] }}"></span>
-                                                        <span>{{ $message['message'] }}</span>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-
                         <div class="component-list">
                             @foreach ($service['components'] as $serviceComponent)
                                 <article class="component-item">
-                                    <div class="component-item__copy">
-                                        <div class="component-item__heading">
-                                            <h4 class="component-name">{{ $serviceComponent['display_name'] }}</h4>
-                                            <x-status-badge :status="$serviceComponent['status']" />
+                                    <div class="component-item__top">
+                                        <div class="component-item__copy">
+                                            <div class="component-item__heading">
+                                                <h4 class="component-name">{{ $serviceComponent['display_name'] }}</h4>
+                                                <x-status-badge :status="$serviceComponent['status']" />
+                                            </div>
+
+                                            @if ($serviceComponent['description'])
+                                                <p class="component-description">{{ $serviceComponent['description'] }}</p>
+                                            @endif
+
+                                            @if (! empty($serviceComponent['active_incidents']))
+                                                <div class="inline-cluster">
+                                                    @foreach ($serviceComponent['active_incidents'] as $reference)
+                                                        <a href="{{ route('status.incidents.show', $reference['slug']) }}" class="status-pill-link">
+                                                            {{ $reference['title'] }}
+                                                        </a>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
 
-                                        @if ($serviceComponent['description'])
-                                            <p class="component-description">{{ $serviceComponent['description'] }}</p>
-                                        @endif
+                                        <div class="component-item__summary">
+                                            <span>90-day uptime</span>
+                                            <strong>{{ number_format((float) $serviceComponent['uptime_90d_percent'], 2) }}%</strong>
+                                        </div>
+                                    </div>
 
-                                        @if (! empty($serviceComponent['active_incidents']))
-                                            <div class="inline-cluster">
-                                                @foreach ($serviceComponent['active_incidents'] as $reference)
-                                                    <a href="{{ route('status.incidents.show', $reference['slug']) }}" class="status-pill-link">
-                                                        {{ $reference['title'] }}
-                                                    </a>
-                                                @endforeach
-                                            </div>
-                                        @endif
+                                    <div class="component-uptime">
+                                        <div class="component-uptime__header">
+                                            <span class="component-uptime__label">Per-component uptime history</span>
+                                            <span class="component-uptime__hint">Hover a bar to inspect that day.</span>
+                                        </div>
+
+                                        <div class="component-uptime__track" aria-label="{{ $serviceComponent['display_name'] }} 90 day uptime history">
+                                            @foreach ($serviceComponent['uptime_bars'] as $bar)
+                                                <div class="component-uptime__cell">
+                                                    <span
+                                                        class="component-uptime__bar component-uptime__bar--{{ $bar['state'] }}"
+                                                        title="{{ $bar['date_label'] }}{{ $bar['percentage'] !== null ? ': '.number_format($bar['percentage'], 2).'%' : ': no data' }}"
+                                                    ></span>
+
+                                                    <div class="component-uptime__tooltip" role="tooltip">
+                                                        <p class="component-uptime__tooltip-date">{{ $bar['date_label'] }}</p>
+                                                        <p class="component-uptime__tooltip-stat">
+                                                            @if ($bar['percentage'] !== null)
+                                                                {{ number_format($bar['percentage'], 2) }}% uptime
+                                                            @else
+                                                                No uptime data recorded
+                                                            @endif
+                                                        </p>
+
+                                                        <div class="component-uptime__tooltip-list">
+                                                            @foreach ($bar['messages'] as $message)
+                                                                <div class="component-uptime__tooltip-item">
+                                                                    <span class="component-uptime__tooltip-dot component-uptime__tooltip-dot--{{ $message['severity'] }}"></span>
+                                                                    <span>{{ $message['message'] }}</span>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </article>
                             @endforeach
