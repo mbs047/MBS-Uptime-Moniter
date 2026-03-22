@@ -230,12 +230,15 @@ class StatusSummaryService
                 $day->copy()->endOfDay(),
                 $publishedIncidents,
             );
+            $percentage = $state === 'no_data'
+                ? null
+                : (float) $uptime->uptime_percentage;
 
             $bars->push([
                 'day' => $dayKey,
                 'date_label' => $day->format('D, j M Y'),
                 'state' => $state,
-                'percentage' => (float) $uptime->uptime_percentage,
+                'percentage' => $percentage,
                 'messages' => $messages !== []
                     ? $messages
                     : [[
