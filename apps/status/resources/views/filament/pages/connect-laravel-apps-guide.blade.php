@@ -378,7 +378,14 @@
                 </x-filament::section>
             </div>
 
-            <div style="display: grid; gap: 1.25rem; align-content: start;">
+            <div
+                style="
+                    display: grid;
+                    gap: 1.25rem;
+                    align-content: start;
+                    grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+                "
+            >
                 <x-filament::section
                     heading="Monitor details"
                     description="Use these values when another Laravel app needs to know where this monitor lives and what it expects."
@@ -484,6 +491,7 @@
                     heading="Recommended operating pattern"
                     description="Start with pull sync to validate reachability and credentials. Add push registration after that if the remote team should be able to re-register or refresh metadata without entering this panel."
                     :icon="Heroicon::OutlinedLightBulb"
+                    style="grid-column: 1 / -1;"
                 >
                     <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
                         <x-filament::badge color="warning" :icon="Heroicon::OutlinedArrowDownTray">
