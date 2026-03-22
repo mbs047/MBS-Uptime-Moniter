@@ -2,8 +2,12 @@
 
 namespace Tests\Unit;
 
+use App\Enums\CheckRunOutcome;
+use App\Enums\ComponentStatus;
+use App\Models\Check;
 use App\Services\Checks\HttpCheckDriver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
@@ -51,5 +55,61 @@ class HttpCheckDriverTest extends TestCase
         ]);
 
         $this->assertSame('basic', $validated['auth_type']);
+    }
+
+    public function test_http_checks_can_map_remote_status_from_a_json_path(): void
+    {
+        Http::fake([
+            'https://example.com/status/health' => Http::response([
+                'checks' => [
+                    'db' => ['status' => 'partial_outage'],
+                ],
+            ]),
+        ]);
+
+        $driver = new HttpCheckDriver();
+        $check = Check::query()->make([
+            'type' => 'http',
+            'timeout_seconds' => 10,
+            'config' => [
+                'method' => 'GET',
+                'url' => 'https://example.com/status/health',
+                'expected_statuses' => [200],
+                'status_json_path' => 'checks.db.status',
+            ],
+        ]);
+
+        $result = $driver->run($check);
+
+        $this->assertSame(CheckRunOutcome::HardFailed, $result->outcome);
+        $this->assertSame(ComponentStatus::PartialOutage, $result->severity);
+    }
+
+    public function test_http_checks_fail_when_a_status_json_path_is_missing(): void
+    {
+        Http::fake([
+            'https://example.com/status/health' => Http::response([
+                'checks' => [
+                    'db' => ['status' => 'operational'],
+                ],
+            ]),
+        ]);
+
+        $driver = new HttpCheckDriver();
+        $check = Check::query()->make([
+            'type' => 'http',
+            'timeout_seconds' => 10,
+            'config' => [
+                'method' => 'GET',
+                'url' => 'https://example.com/status/health',
+                'expected_statuses' => [200],
+                'status_json_path' => 'checks.cache.status',
+            ],
+        ]);
+
+        $result = $driver->run($check);
+
+        $this->assertSame(CheckRunOutcome::HardFailed, $result->outcome);
+        $this->assertSame(ComponentStatus::MajorOutage, $result->severity);
     }
 }

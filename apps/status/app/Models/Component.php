@@ -18,6 +18,8 @@ class Component extends Model
      */
     protected $fillable = [
         'service_id',
+        'remote_integration_id',
+        'remote_component_key',
         'display_name',
         'description',
         'sort_order',
@@ -43,6 +45,11 @@ class Component extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function remoteIntegration(): BelongsTo
+    {
+        return $this->belongsTo(RemoteIntegration::class);
     }
 
     public function checks(): HasMany

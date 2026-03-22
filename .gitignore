@@ -23,6 +23,9 @@
 /apps/status/storage/*.key
 /apps/status/storage/pail
 /apps/status/vendor
+/packages/*/composer.lock
+/packages/*/.phpunit.result.cache
+/packages/*/vendor
 Homestead.json
 Homestead.yaml
 Thumbs.db

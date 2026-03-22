@@ -19,6 +19,7 @@ class PlatformSetting extends Model
         'support_email',
         'mail_from_name',
         'mail_from_address',
+        'probe_registration_token',
         'seo_title',
         'seo_description',
         'uptime_window_days',
@@ -36,6 +37,7 @@ class PlatformSetting extends Model
             'raw_run_retention_days' => 14,
             'default_failure_threshold' => 2,
             'default_recovery_threshold' => 1,
+            'probe_registration_token' => null,
         ]);
     }
 }

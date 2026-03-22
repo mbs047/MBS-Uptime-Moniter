@@ -1,0 +1,38 @@
+name: Publish Probe Package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/laravel-status-probe/**"
+      - ".github/workflows/publish-probe-package.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure SSH key
+        env:
+          PROBE_PACKAGE_SSH_KEY: ${{ secrets.PROBE_PACKAGE_SSH_KEY }}
+        run: |
+          test -n "$PROBE_PACKAGE_SSH_KEY"
+          mkdir -p ~/.ssh
+          printf "%s\n" "$PROBE_PACKAGE_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Split package subtree
+        run: git subtree split --prefix=packages/laravel-status-probe --branch probe-package-split
+
+      - name: Push split package
+        run: git push --force git@github.com:mbs047/laravel-status-probe.git probe-package-split:main

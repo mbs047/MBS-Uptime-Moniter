@@ -18,6 +18,8 @@ class Check extends Model
      */
     protected $fillable = [
         'component_id',
+        'remote_integration_id',
+        'remote_component_key',
         'name',
         'type',
         'interval_minutes',
@@ -60,6 +62,11 @@ class Check extends Model
     public function component(): BelongsTo
     {
         return $this->belongsTo(Component::class);
+    }
+
+    public function remoteIntegration(): BelongsTo
+    {
+        return $this->belongsTo(RemoteIntegration::class);
     }
 
     public function runs(): HasMany

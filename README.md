@@ -13,6 +13,7 @@ This repository is organized as a workspace. The Laravel application now lives i
 
 - Public status page with service, component, incident, and uptime history views
 - Automated check drivers for HTTP, SSL, DNS, and TCP monitoring
+- Companion Laravel probe package for automatic monitored-app registration
 - Incident publishing workflow with updates, timelines, and severity mapping
 - Subscriber confirmation and unsubscribe flows for status notifications
 - Filament-powered admin panel for services, components, checks, incidents, and settings
@@ -36,6 +37,7 @@ This repository is organized as a workspace. The Laravel application now lives i
 ├── api/status/          # Endpoint contracts, specs, and examples
 ├── apps/status/         # Laravel application
 ├── documents/           # Long-form repository documentation
+├── packages/            # Composer-installable workspace packages
 ├── README.md            # Repository entrypoint
 └── .github/             # CI, templates, and repo automation
 ```
@@ -95,6 +97,9 @@ Use the root `Makefile` to work with the nested Laravel app without leaving the 
 - `make status-build`
 - `make status-pint`
 - `make status-artisan CMD="migrate --seed"`
+- `make probe-install`
+- `make probe-test`
+- `make probe-composer CMD="update --dry-run"`
 
 ## Local Development
 
@@ -120,6 +125,8 @@ make status-build
 make status-artisan CMD="status:dispatch-due-checks"
 make status-artisan CMD="status:refresh-daily-uptime --days=2"
 make status-artisan CMD="status:prune-check-runs"
+make probe-install
+make probe-test
 ```
 
 ## Testing and Quality
@@ -130,9 +137,29 @@ Before opening a pull request, run:
 make status-pint
 make status-test
 make status-build
+make probe-test
 ```
 
 The repository also includes GitHub Actions CI and Dependabot configuration for ongoing maintenance.
+
+## Laravel Probe Package
+
+The workspace now includes a Composer package at `packages/laravel-status-probe`.
+
+- Package name: `mbs047/laravel-status-probe`
+- Purpose: install authenticated health and metadata endpoints into another Laravel app
+- Local package commands:
+  - `make probe-install`
+  - `make probe-test`
+  - `make probe-composer CMD="update --dry-run"`
+
+Once installed in another Laravel app, the package provides:
+
+- a configurable health endpoint, default `status/health`
+- a configurable metadata endpoint, default `status/metadata`
+- `php artisan status-probe:install`
+- `php artisan status-probe:register`
+- `php artisan status-probe:heartbeat scheduler`
 
 ## API Docs
 
@@ -141,6 +168,8 @@ Repository-level API docs and examples live in `api/status/`.
 ## Deployment
 
 If your deployment previously assumed the Laravel app lived at the repo root, update it to use `apps/status/public` as the web root.
+
+The package split workflow publishes `packages/laravel-status-probe` to its package-facing repository so it can be registered with Packagist independently of the monorepo root.
 
 ## Contributing
 
