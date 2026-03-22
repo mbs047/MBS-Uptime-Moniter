@@ -193,11 +193,30 @@
                                     </x-filament::badge>
                                 </div>
 
-                                <ul style="margin: 0; padding-left: 1rem; display: grid; gap: 0.55rem; line-height: 1.65; color: rgb(68, 64, 60);">
+                                <div style="display: grid; gap: 0.85rem;">
                                     @foreach ($criticalRemoteValues as $item)
-                                        <li>{{ $item }}</li>
+                                        <div
+                                            style="
+                                                display: grid;
+                                                gap: 0.55rem;
+                                                padding: 0.9rem 1rem;
+                                                border-radius: 0.9rem;
+                                                background: rgba(250, 250, 249, 1);
+                                                border: 1px solid rgba(231, 229, 228, 1);
+                                            "
+                                        >
+                                            <x-filament::badge color="gray" :icon="$item['label'] === 'STATUS_PROBE_TOKEN' ? Heroicon::OutlinedKey : ($item['label'] === 'APP_URL' ? Heroicon::OutlinedGlobeAlt : Heroicon::OutlinedAdjustmentsHorizontal)">
+                                                {{ $item['label'] }}
+                                            </x-filament::badge>
+
+                                            <pre style="margin: 0; white-space: pre-wrap; font-size: 0.86rem; line-height: 1.7; color: rgb(28, 25, 23);"><code>{{ $item['value'] }}</code></pre>
+
+                                            <span style="font-size: 0.92rem; line-height: 1.65; color: rgb(87, 83, 78);">
+                                                {{ $item['description'] }}
+                                            </span>
+                                        </div>
                                     @endforeach
-                                </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
