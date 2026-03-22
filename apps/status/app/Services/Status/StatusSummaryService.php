@@ -72,6 +72,25 @@ class StatusSummaryService
         return $this->serializeIncidents($this->publishedIncidents());
     }
 
+    public function historyPayload(): array
+    {
+        $settings = PlatformSetting::current();
+        $publishedIncidents = $this->publishedIncidents();
+        $activeIncidents = $this->activeIncidents($publishedIncidents);
+
+        return [
+            'settings' => $settings,
+            'activeIncidents' => $this->serializeIncidents($activeIncidents),
+            'incidentHistory' => $this->serializeIncidents($publishedIncidents),
+            'historyStats' => [
+                'published_incidents' => $publishedIncidents->count(),
+                'active_incidents' => $activeIncidents->count(),
+                'resolved_incidents' => $publishedIncidents->filter(fn (Incident $incident) => $incident->resolved_at !== null)->count(),
+                'maintenance_incidents' => $publishedIncidents->filter(fn (Incident $incident) => $incident->severity->value === 'maintenance')->count(),
+            ],
+        ];
+    }
+
     protected function servicesQuery(int $windowDays)
     {
         $fromDay = Carbon::today(config('app.timezone'))->subDays($windowDays - 1);

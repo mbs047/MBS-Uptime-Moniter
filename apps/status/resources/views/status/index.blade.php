@@ -38,37 +38,75 @@
 
             <nav class="status-nav" aria-label="Status page">
                 <button type="button" class="status-nav__link status-nav__button" data-open-subscribe-modal>Subscribe to updates</button>
-                <a href="#history" class="status-nav__link">View history</a>
                 <span class="status-nav__stamp">Updated {{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}</span>
             </nav>
         </header>
 
         <section class="status-overview">
             <div class="status-overview__main">
-                <span class="status-eyebrow">Current status</span>
-                <h1 class="status-headline">{{ $overallHeadline }}</h1>
-                <p class="status-copy">{{ $overallCopy }}</p>
+                <div class="status-overview__layout">
+                    <div class="status-overview__copy">
+                        <span class="status-eyebrow">Current status</span>
+                        <h1 class="status-headline">{{ $overallHeadline }}</h1>
+                        <p class="status-copy">{{ $overallCopy }}</p>
 
-                <div class="status-meta-row">
-                    <x-status-badge :status="$summary['overall_status']" />
-                    <span>{{ count($services) }} service groups</span>
-                    <span>{{ $summary['affected_component_count'] }} public components</span>
-                    <span>{{ $summary['active_incident_count'] }} active incident{{ $summary['active_incident_count'] === 1 ? '' : 's' }}</span>
+                        <div class="status-overview__note">
+                            <span class="status-overview__note-line"></span>
+                            <p>Live production visibility across public services, component health checks, and published incidents.</p>
+                        </div>
+                    </div>
+
+                    <aside class="status-overview__panel" aria-label="Current status snapshot">
+                        <div class="status-overview__panel-header">
+                            <div>
+                                <span class="status-eyebrow">Live snapshot</span>
+                                <p class="panel-copy">A compact operational view of the public estate right now.</p>
+                            </div>
+                            <x-status-badge :status="$summary['overall_status']" />
+                        </div>
+
+                        <div class="status-overview__stats">
+                            <div class="status-overview__stat">
+                                <span>Service groups</span>
+                                <strong>{{ count($services) }}</strong>
+                                <small>public production groups</small>
+                            </div>
+
+                            <div class="status-overview__stat">
+                                <span>Components</span>
+                                <strong>{{ $summary['affected_component_count'] }}</strong>
+                                <small>public monitored components</small>
+                            </div>
+
+                            <div class="status-overview__stat">
+                                <span>Active incidents</span>
+                                <strong>{{ $summary['active_incident_count'] }}</strong>
+                                <small>{{ $summary['active_incident_count'] === 0 ? 'no active notices' : 'published right now' }}</small>
+                            </div>
+
+                            <div class="status-overview__stat">
+                                <span>Last updated</span>
+                                <strong>{{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}</strong>
+                                <small>status snapshot generated</small>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </section>
 
-        <section class="status-section">
-            <div class="status-section__header">
-                <div>
-                    <span class="status-eyebrow">Current notices</span>
-                    <h2 class="section-title">Active incidents and maintenance</h2>
-                    <p class="section-lede">Any published incident appears here before it reaches subscriber inboxes.</p>
+        @if ($activeIncidents !== [])
+            <section class="status-section">
+                <div class="status-section__header">
+                    <div>
+                        <span class="status-eyebrow">Current notices</span>
+                        <h2 class="section-title">Active incidents and maintenance</h2>
+                        <p class="section-lede">Any published incident appears here before it reaches subscriber inboxes.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="notice-list">
-                @forelse ($activeIncidents as $incident)
+                <div class="notice-list">
+                    @foreach ($activeIncidents as $incident)
                     <article class="notice-card">
                         <div class="notice-card__meta">
                             <x-status-badge :status="$incident['severity']" />
@@ -86,16 +124,10 @@
                             <a href="{{ route('status.incidents.show', $incident['slug']) }}" class="button-secondary">Open incident</a>
                         </div>
                     </article>
-                @empty
-                    <article class="notice-card notice-card--quiet">
-                        <div class="notice-card__meta">
-                            <span>No active incidents or maintenance</span>
-                        </div>
-                        <p class="section-lede">We’re not aware of any issues affecting the monitored production systems right now.</p>
-                    </article>
-                @endforelse
-            </div>
-        </section>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         <section class="status-section">
             <div class="status-section__header">
@@ -214,39 +246,9 @@
             </div>
         </section>
 
-        <section class="status-section" id="history">
-            <div class="status-section__header">
-                <div>
-                    <span class="status-eyebrow">History</span>
-                    <h2 class="section-title">Recent incident history</h2>
-                    <p class="section-lede">A rolling archive of the latest published notices and maintenance updates.</p>
-                </div>
-            </div>
-
-            <div class="history-feed">
-                @foreach ($incidentHistory as $incident)
-                    <article class="history-entry">
-                        <div class="history-entry__meta">
-                            <x-status-badge :status="$incident['severity']" />
-                            <span>{{ $incident['published_at'] ? \Illuminate\Support\Carbon::parse($incident['published_at'])->format('M j, Y g:i A T') : 'Published incident' }}</span>
-                        </div>
-                        <div class="history-entry__content">
-                            <div>
-                                <h3 class="history-title">
-                                    <a href="{{ route('status.incidents.show', $incident['slug']) }}">{{ $incident['title'] }}</a>
-                                </h3>
-                                @if ($incident['latest_update'])
-                                    <p class="section-lede">{{ \Illuminate\Support\Str::limit($incident['latest_update'], 220) }}</p>
-                                @elseif ($incident['summary'])
-                                    <p class="section-lede">{{ \Illuminate\Support\Str::limit($incident['summary'], 220) }}</p>
-                                @endif
-                            </div>
-                            <a href="{{ route('status.incidents.show', $incident['slug']) }}" class="history-entry__link">View details</a>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-        </section>
+        <div class="status-footer-cta">
+            <a href="{{ route('status.history') }}" class="button-secondary status-footer-cta__button">View history</a>
+        </div>
 
         <footer class="status-footer">
             <p>
