@@ -7,10 +7,13 @@ use App\Filament\Resources\RemoteIntegrations\RemoteIntegrationResource;
 use App\Services\RemoteIntegrations\RemoteIntegrationSyncService;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\Width;
 
 class CreateRemoteIntegration extends CreateRecord
 {
     protected static string $resource = RemoteIntegrationResource::class;
+
+    protected Width|string|null $maxContentWidth = Width::Full;
 
     protected ?string $subheading = 'Use the guided flow to connect a package-enabled Laravel app and sync its metadata into this monitor.';
 
