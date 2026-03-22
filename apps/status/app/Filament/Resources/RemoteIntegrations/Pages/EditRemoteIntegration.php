@@ -79,7 +79,7 @@ class EditRemoteIntegration extends EditRecord
         } catch (\Throwable $exception) {
             Notification::make()
                 ->title('Remote integration saved, but sync failed.')
-                ->body($exception->getMessage())
+                ->body(RemoteIntegrationResource::describeSyncFailure($exception))
                 ->danger()
                 ->send();
         }

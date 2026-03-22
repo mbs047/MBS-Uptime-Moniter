@@ -35,6 +35,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Throwable;
 use UnitEnum;
 
 class RemoteIntegrationResource extends Resource
@@ -297,14 +298,26 @@ class RemoteIntegrationResource extends Resource
                         ->body('The linked service, remote components, and package-managed checks were refreshed from the metadata payload.')
                         ->success()
                         ->send();
-                } catch (\Throwable $exception) {
+                } catch (Throwable $exception) {
                     Notification::make()
                         ->title('Remote integration sync failed.')
-                        ->body($exception->getMessage())
+                        ->body(static::describeSyncFailure($exception))
                         ->danger()
                         ->send();
                 }
             });
+    }
+
+    public static function describeSyncFailure(Throwable $exception): string
+    {
+        $message = $exception->getMessage();
+
+        if (! static::looksLikeTlsFailure($message)) {
+            return $message;
+        }
+
+        return $message.PHP_EOL.PHP_EOL
+            .'For local or self-signed HTTPS endpoints such as *.test, open Endpoints & auth -> TLS and either disable Verify TLS certificates or set a Custom CA bundle path.';
     }
 
     /**
@@ -339,5 +352,17 @@ class RemoteIntegrationResource extends Resource
             ->replace(['www.', '.'], [' ', ' '])
             ->headline()
             ->value();
+    }
+
+    protected static function looksLikeTlsFailure(string $message): bool
+    {
+        return Str::contains(Str::lower($message), [
+            'tls connect error',
+            'ssl certificate problem',
+            'self-signed certificate',
+            'certificate verify failed',
+            'curl error 35',
+            'curl error 60',
+        ]);
     }
 }

@@ -58,7 +58,7 @@ class CreateRemoteIntegration extends CreateRecord
         } catch (\Throwable $exception) {
             Notification::make()
                 ->title('Remote integration created, but sync failed.')
-                ->body($exception->getMessage())
+                ->body(RemoteIntegrationResource::describeSyncFailure($exception))
                 ->danger()
                 ->send();
         }
