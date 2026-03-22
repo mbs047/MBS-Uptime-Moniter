@@ -21,6 +21,7 @@ class EditCheck extends EditRecord
         return [
             ActionGroup::make([
                 ViewAction::make(),
+                CheckResource::makeViewRunsAction(),
                 CheckResource::makeRunNowAction(),
                 DeleteAction::make(),
             ])
