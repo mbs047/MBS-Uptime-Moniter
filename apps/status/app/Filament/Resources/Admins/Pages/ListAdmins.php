@@ -27,7 +27,8 @@ class ListAdmins extends ListRecords
                 CreateAction::make()
                     ->label('Create admin manually')
                     ->icon(Heroicon::OutlinedShieldCheck)
-                    ->color('gray'),
+                    ->color('gray')
+                    ->slideOver(),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::OutlinedEllipsisHorizontal)

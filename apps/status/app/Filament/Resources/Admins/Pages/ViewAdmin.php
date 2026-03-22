@@ -16,7 +16,8 @@ class ViewAdmin extends ViewRecord
     {
         return [
             ActionGroup::make([
-                EditAction::make(),
+                EditAction::make()
+                    ->slideOver(),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::OutlinedEllipsisHorizontal)

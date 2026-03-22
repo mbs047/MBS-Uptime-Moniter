@@ -132,7 +132,8 @@ class AdminResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
+                    EditAction::make()
+                        ->slideOver(),
                 ])
                     ->label('Actions')
                     ->icon(Heroicon::OutlinedEllipsisHorizontal)
