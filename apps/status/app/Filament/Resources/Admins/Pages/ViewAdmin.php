@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\Admins\Pages;
 
 use App\Filament\Resources\Admins\AdminResource;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Support\Icons\Heroicon;
 
 class ViewAdmin extends ViewRecord
 {
@@ -13,7 +15,12 @@ class ViewAdmin extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
+            ActionGroup::make([
+                EditAction::make(),
+            ])
+                ->label('Actions')
+                ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                ->button(),
         ];
     }
 }

@@ -9,6 +9,7 @@ use App\Filament\Resources\Admins\Pages\ViewAdmin;
 use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Models\Admin;
 use BackedEnum;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -128,8 +129,13 @@ class AdminResource extends Resource
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                    ->button(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
