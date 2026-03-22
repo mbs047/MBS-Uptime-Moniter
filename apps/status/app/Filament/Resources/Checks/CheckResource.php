@@ -11,7 +11,7 @@ use App\Filament\Resources\Checks\Pages\ViewCheck;
 use App\Jobs\RunCheckJob;
 use App\Models\Check;
 use App\Models\Component;
-use App\Models\PlatformSetting;
+use App\Support\Filament\FormDefaults;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -51,7 +51,7 @@ class CheckResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        $defaults = PlatformSetting::current();
+        $defaults = FormDefaults::platformSettings();
 
         return $schema
             ->components([
@@ -80,9 +80,10 @@ class CheckResource extends Resource
                                         }),
                                     Select::make('type')
                                         ->options(static::getTypeOptions())
+                                        ->default(FormDefaults::checkType())
                                         ->required()
                                         ->live()
-                                        ->helperText('Use HTTP for URLs, SSL for certificate expiry, DNS for records, and TCP for host:port reachability.')
+                                        ->helperText('Use HTTP for URLs, SSL for certificate expiry, DNS for records, and TCP for host:port reachability. New checks start as HTTP because it is the most common probe type.')
                                         ->afterStateUpdated(function (?string $state, Get $get, Set $set): void {
                                             if (filled($get('name'))) {
                                                 return;
@@ -123,13 +124,13 @@ class CheckResource extends Resource
                                         ->helperText('Treat this as the maximum tolerated wait for the network operation itself.'),
                                     TextInput::make('failure_threshold')
                                         ->numeric()
-                                        ->default($defaults->default_failure_threshold)
+                                        ->default($defaults['default_failure_threshold'])
                                         ->minValue(1)
                                         ->required()
                                         ->helperText('The component changes status only after this many consecutive failed runs.'),
                                     TextInput::make('recovery_threshold')
                                         ->numeric()
-                                        ->default($defaults->default_recovery_threshold)
+                                        ->default($defaults['default_recovery_threshold'])
                                         ->minValue(1)
                                         ->required()
                                         ->helperText('Use a higher recovery threshold only when you want multiple clean runs before clearing an issue.'),
@@ -197,7 +198,7 @@ class CheckResource extends Resource
                                         ->helperText('Use the certificate hostname the monitor should open a TLS handshake against.'),
                                     TextInput::make('config.port')
                                         ->numeric()
-                                        ->default(443)
+                                        ->default(FormDefaults::httpsPort())
                                         ->required(fn (Get $get): bool => $get('type') === CheckType::Ssl->value)
                                         ->helperText('443 is the normal HTTPS port unless the service terminates TLS elsewhere.'),
                                     TextInput::make('config.minimum_days_remaining')
@@ -240,8 +241,9 @@ class CheckResource extends Resource
                                         ->helperText('Use the remote host the monitor should attempt to reach over TCP.'),
                                     TextInput::make('config.port')
                                         ->numeric()
+                                        ->default(FormDefaults::httpsPort())
                                         ->required(fn (Get $get): bool => $get('type') === CheckType::Tcp->value)
-                                        ->helperText('This is usually 443, 80, or another known service port.'),
+                                        ->helperText('This is usually 443, 80, or another known service port. New TCP checks start at 443 to match the most common production use case.'),
                                 ])
                                 ->columnSpanFull()
                                 ->columns(2),
@@ -254,8 +256,9 @@ class CheckResource extends Resource
                                 ->visible(fn (Get $get): bool => $get('type') === CheckType::Http->value)
                                 ->schema([
                                     TagsInput::make('config.expected_statuses')
+                                        ->default(FormDefaults::httpExpectedStatuses())
                                         ->separator(',')
-                                        ->helperText('Use comma-separated status codes such as 200 or 200,201. Leave 200 for most health endpoints.'),
+                                        ->helperText('Use comma-separated status codes such as 200 or 200,201. New HTTP checks start with 200 because that covers the most common health endpoints.'),
                                     TextInput::make('config.max_latency_ms')
                                         ->numeric()
                                         ->helperText('Optional. Fail softly when latency exceeds this ceiling.'),

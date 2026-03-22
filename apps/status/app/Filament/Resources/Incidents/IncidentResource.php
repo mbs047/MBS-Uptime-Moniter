@@ -9,6 +9,7 @@ use App\Filament\Resources\Incidents\Pages\EditIncident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
 use App\Filament\Resources\Incidents\Pages\ViewIncident;
 use App\Models\Incident;
+use App\Support\Filament\FormDefaults;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -70,8 +71,9 @@ class IncidentResource extends Resource
                             ->helperText('Draft stays internal. Published is visible to subscribers and the public site. Resolved closes the incident timeline.'),
                         Select::make('severity')
                             ->options(static::getSeverityOptions())
+                            ->default(FormDefaults::incidentSeverity())
                             ->required()
-                            ->helperText('This severity overrides automated health for the affected services and components while the incident is active.'),
+                            ->helperText('This severity overrides automated health for the affected services and components while the incident is active. New incidents start at degraded so operators can escalate intentionally when needed.'),
                         Textarea::make('summary')
                             ->rows(4)
                             ->columnSpanFull()
@@ -101,7 +103,8 @@ class IncidentResource extends Resource
                     ->description('Use the actual start time for impact, scheduled windows for maintenance, and published or resolved timestamps to control the public timeline.')
                     ->schema([
                         DateTimePicker::make('starts_at')
-                            ->helperText('When the customer-facing impact or maintenance actually began.'),
+                            ->default(fn () => now())
+                            ->helperText('When the customer-facing impact or maintenance actually began. New incidents start at the current time to speed up incident creation.'),
                         DateTimePicker::make('scheduled_starts_at')
                             ->helperText('Optional. Planned maintenance window start.'),
                         DateTimePicker::make('scheduled_ends_at')

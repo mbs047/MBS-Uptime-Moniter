@@ -7,6 +7,7 @@ use App\Filament\Resources\PlatformSettings\Pages\EditPlatformSetting;
 use App\Filament\Resources\PlatformSettings\Pages\ListPlatformSettings;
 use App\Filament\Resources\PlatformSettings\Pages\ViewPlatformSetting;
 use App\Models\PlatformSetting;
+use App\Support\Filament\FormDefaults;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -35,26 +36,32 @@ class PlatformSettingResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
+        $defaults = FormDefaults::platformSettings();
+
         return $schema
             ->components([
                 Section::make('Brand and public copy')
                     ->description('These values shape the public status page, browser metadata, and support messaging.')
                     ->schema([
                         TextInput::make('brand_name')
+                            ->default($defaults['brand_name'])
                             ->required()
                             ->maxLength(255)
-                            ->helperText('Displayed in the public status page header and the admin panel brand area.'),
+                            ->helperText('Displayed in the public status page header and the admin panel brand area. Starts with the platform default on first setup.'),
                         TextInput::make('brand_tagline')
+                            ->default($defaults['brand_tagline'])
                             ->maxLength(255)
-                            ->helperText('Short supporting line shown on the public status experience.'),
+                            ->helperText('Short supporting line shown on the public status experience. Starts with the baseline monitor tagline on first setup.'),
                         TextInput::make('brand_url')
+                            ->default($defaults['brand_url'])
                             ->url()
                             ->maxLength(255)
-                            ->helperText('Where users should go when they click the brand from the public status page.'),
+                            ->helperText('Where users should go when they click the brand from the public status page. Prefills from APP_URL when available.'),
                         TextInput::make('support_email')
+                            ->default($defaults['support_email'])
                             ->email()
                             ->maxLength(255)
-                            ->helperText('Public-facing support contact for status or incident questions.'),
+                            ->helperText('Public-facing support contact for status or incident questions. Prefills from the configured mail sender address when available.'),
                     ])
                     ->columnSpanFull()
                     ->columns(2),
@@ -62,12 +69,14 @@ class PlatformSettingResource extends Resource
                     ->description('These values are used when the monitor sends incident emails to subscribers or administrators.')
                     ->schema([
                         TextInput::make('mail_from_name')
+                            ->default($defaults['mail_from_name'])
                             ->maxLength(255)
-                            ->helperText('Friendly sender name for incident updates.'),
+                            ->helperText('Friendly sender name for incident updates. Prefills from MAIL_FROM_NAME or the current brand name.'),
                         TextInput::make('mail_from_address')
+                            ->default($defaults['mail_from_address'])
                             ->email()
                             ->maxLength(255)
-                            ->helperText('Sender email address used for all outgoing status notifications.'),
+                            ->helperText('Sender email address used for all outgoing status notifications. Prefills from MAIL_FROM_ADDRESS when available.'),
                     ])
                     ->columnSpanFull()
                     ->columns(2),
@@ -75,25 +84,29 @@ class PlatformSettingResource extends Resource
                     ->description('New checks start from these defaults unless an operator overrides them on the form.')
                     ->schema([
                         TextInput::make('uptime_window_days')
+                            ->default($defaults['uptime_window_days'])
                             ->numeric()
                             ->required()
                             ->minValue(30)
-                            ->helperText('Controls how many days of history the public status page shows for uptime bars and summary percentages.'),
+                            ->helperText('Controls how many days of history the public status page shows for uptime bars and summary percentages. Starts at 90 days by default.'),
                         TextInput::make('raw_run_retention_days')
+                            ->default($defaults['raw_run_retention_days'])
                             ->numeric()
                             ->required()
                             ->minValue(1)
-                            ->helperText('Raw check runs older than this can be pruned after their daily aggregates are preserved.'),
+                            ->helperText('Raw check runs older than this can be pruned after their daily aggregates are preserved. Starts at 14 days by default.'),
                         TextInput::make('default_failure_threshold')
+                            ->default($defaults['default_failure_threshold'])
                             ->numeric()
                             ->required()
                             ->minValue(1)
-                            ->helperText('New checks inherit this many consecutive failures before automated health degrades.'),
+                            ->helperText('New checks inherit this many consecutive failures before automated health degrades. Starts at 2 failures by default.'),
                         TextInput::make('default_recovery_threshold')
+                            ->default($defaults['default_recovery_threshold'])
                             ->numeric()
                             ->required()
                             ->minValue(1)
-                            ->helperText('New checks inherit this many consecutive passing runs before automated health recovers.'),
+                            ->helperText('New checks inherit this many consecutive passing runs before automated health recovers. Starts at 1 passing run by default.'),
                     ])
                     ->columnSpanFull()
                     ->columns(2),
@@ -121,12 +134,14 @@ class PlatformSettingResource extends Resource
                     ->description('Used for browser tabs, search previews, and link embeds for the public status page.')
                     ->schema([
                         TextInput::make('seo_title')
+                            ->default($defaults['seo_title'])
                             ->maxLength(255)
-                            ->helperText('Defaults to the brand name if left blank, but a custom title can improve search and sharing previews.'),
+                            ->helperText('Prefills from the current brand name so the page is ready immediately, but a custom title can improve search and sharing previews.'),
                         Textarea::make('seo_description')
+                            ->default($defaults['seo_description'])
                             ->rows(3)
                             ->columnSpanFull()
-                            ->helperText('Short summary of what the status page covers and who it serves.'),
+                            ->helperText('Short summary of what the status page covers and who it serves. Starts from the brand tagline on first setup.'),
                     ])
                     ->columnSpanFull()
                     ->columns(2),
