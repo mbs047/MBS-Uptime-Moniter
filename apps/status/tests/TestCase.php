@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use RuntimeException;
 
@@ -13,7 +14,11 @@ abstract class TestCase extends BaseTestCase
     {
         $this->configureDedicatedTestDatabase();
 
-        return parent::createApplication();
+        $app = parent::createApplication();
+
+        $this->configureDedicatedTestDatabase($app);
+
+        return $app;
     }
 
     protected function migrateDatabases()
@@ -21,7 +26,7 @@ abstract class TestCase extends BaseTestCase
         $this->artisan('migrate', ['--force' => true]);
     }
 
-    protected function configureDedicatedTestDatabase(): void
+    protected function configureDedicatedTestDatabase(?Application $app = null): void
     {
         if (($this->environmentValue('APP_ENV') ?? 'testing') !== 'testing') {
             return;
@@ -40,6 +45,19 @@ abstract class TestCase extends BaseTestCase
         $this->writeEnvironmentValue('DB_CONNECTION', 'sqlite');
         $this->writeEnvironmentValue('DB_DATABASE', $databasePath);
         $this->writeEnvironmentValue('DB_URL', '');
+
+        if (! $app) {
+            return;
+        }
+
+        $app['config']->set('database.default', 'sqlite');
+        $app['config']->set('database.connections.sqlite.url', null);
+        $app['config']->set('database.connections.sqlite.database', $databasePath);
+
+        if ($app->bound('db')) {
+            $app['db']->purge('sqlite');
+            $app['db']->purge();
+        }
     }
 
     protected function resolveDedicatedTestDatabasePath(): string
@@ -94,5 +112,18 @@ abstract class TestCase extends BaseTestCase
         $_ENV[$key] = $value;
         $_SERVER[$key] = $value;
         putenv($key.'='.$value);
+    }
+
+    protected function beforeRefreshingDatabase()
+    {
+        $configuredDatabasePath = $this->app['config']->get('database.connections.sqlite.database');
+
+        if (! is_string($configuredDatabasePath)) {
+            return;
+        }
+
+        if (realpath($configuredDatabasePath) === realpath($this->primaryDatabasePath())) {
+            throw new RuntimeException('Tests cannot refresh the working application database. PHPUnit must use a dedicated sqlite file under database/testing.');
+        }
     }
 }
