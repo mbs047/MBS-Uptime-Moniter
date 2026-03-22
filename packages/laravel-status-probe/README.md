@@ -1,6 +1,8 @@
 # Laravel Status Probe
 
 `mbs047/laravel-status-probe` is the companion package for the status monitor.
+Its package-facing repository for Packagist is
+`https://github.com/mbs047/MBS-Uptime-Moniter-Package`.
 
 It installs a configurable health surface inside another Laravel application and
 exposes metadata that the monitor can import or accept via push registration.

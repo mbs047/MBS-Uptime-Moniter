@@ -147,6 +147,7 @@ The repository also includes GitHub Actions CI and Dependabot configuration for 
 The workspace now includes a Composer package at `packages/laravel-status-probe`.
 
 - Package name: `mbs047/laravel-status-probe`
+- Package-facing repository: `https://github.com/mbs047/MBS-Uptime-Moniter-Package`
 - Purpose: install authenticated health and metadata endpoints into another Laravel app
 - Local package commands:
   - `make probe-install`
@@ -169,7 +170,7 @@ Repository-level API docs and examples live in `api/status/`.
 
 If your deployment previously assumed the Laravel app lived at the repo root, update it to use `apps/status/public` as the web root.
 
-The package split workflow publishes `packages/laravel-status-probe` to its package-facing repository so it can be registered with Packagist independently of the monorepo root.
+The package split workflow publishes `packages/laravel-status-probe` to `mbs047/MBS-Uptime-Moniter-Package` so it can be registered with Packagist independently of the monorepo root.
 
 ## Contributing
 

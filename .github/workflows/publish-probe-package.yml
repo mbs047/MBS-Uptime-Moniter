@@ -35,4 +35,6 @@ jobs:
         run: git subtree split --prefix=packages/laravel-status-probe --branch probe-package-split
 
       - name: Push split package
-        run: git push --force git@github.com:mbs047/laravel-status-probe.git probe-package-split:main
+        # The package is published from a dedicated repo so Packagist can read
+        # its root composer.json instead of the monorepo subdirectory.
+        run: git push --force git@github.com:mbs047/MBS-Uptime-Moniter-Package.git probe-package-split:main
