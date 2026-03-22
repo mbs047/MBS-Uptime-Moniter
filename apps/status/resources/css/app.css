@@ -557,19 +557,6 @@ a {
     background: var(--surface-2);
 }
 
-.component-uptime__header {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.55rem;
-    align-items: center;
-    margin-bottom: 0.42rem;
-}
-
-.component-uptime__hint {
-    color: var(--ink-500);
-    font-size: 0.58rem;
-}
-
 .component-uptime__track {
     display: grid;
     grid-template-columns: repeat(90, minmax(0, 1fr));
@@ -1115,8 +1102,7 @@ a {
         white-space: normal;
     }
 
-    .component-item__top,
-    .component-uptime__header {
+    .component-item__top {
         flex-direction: column;
         align-items: start;
     }
