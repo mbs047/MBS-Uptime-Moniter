@@ -14,9 +14,10 @@ use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable implements CanResetPasswordContract, FilamentUser
 {
+    use CanResetPassword;
+
     /** @use HasFactory<AdminFactory> */
     use HasFactory, Notifiable;
-    use CanResetPassword;
 
     /**
      * @var list<string>

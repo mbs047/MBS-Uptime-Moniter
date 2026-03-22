@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Services;
 
+use App\Enums\ComponentStatus;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Resources\Services\Pages\EditService;
 use App\Filament\Resources\Services\Pages\ListServices;
 use App\Filament\Resources\Services\Pages\ViewService;
-use App\Enums\ComponentStatus;
 use App\Models\Service;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;

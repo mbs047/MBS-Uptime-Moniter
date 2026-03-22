@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Incidents\Pages;
 
-use App\Filament\Resources\Incidents\IncidentResource;
 use App\Enums\IncidentStatus;
+use App\Filament\Resources\Incidents\IncidentResource;
 use App\Services\Status\IncidentNotifier;
-use Illuminate\Support\Str;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Str;
 
 class CreateIncident extends CreateRecord
 {

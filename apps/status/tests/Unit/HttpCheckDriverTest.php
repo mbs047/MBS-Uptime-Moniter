@@ -17,7 +17,7 @@ class HttpCheckDriverTest extends TestCase
 
     public function test_basic_auth_checks_require_username_and_password(): void
     {
-        $driver = new HttpCheckDriver();
+        $driver = new HttpCheckDriver;
 
         $this->expectException(ValidationException::class);
 
@@ -30,7 +30,7 @@ class HttpCheckDriverTest extends TestCase
 
     public function test_bearer_auth_checks_require_a_token(): void
     {
-        $driver = new HttpCheckDriver();
+        $driver = new HttpCheckDriver;
 
         $this->expectException(ValidationException::class);
 
@@ -43,7 +43,7 @@ class HttpCheckDriverTest extends TestCase
 
     public function test_http_check_validation_accepts_complete_auth_config(): void
     {
-        $driver = new HttpCheckDriver();
+        $driver = new HttpCheckDriver;
 
         $validated = $driver->validate([
             'method' => 'GET',
@@ -67,7 +67,7 @@ class HttpCheckDriverTest extends TestCase
             ]),
         ]);
 
-        $driver = new HttpCheckDriver();
+        $driver = new HttpCheckDriver;
         $check = Check::query()->make([
             'type' => 'http',
             'timeout_seconds' => 10,
@@ -95,7 +95,7 @@ class HttpCheckDriverTest extends TestCase
             ]),
         ]);
 
-        $driver = new HttpCheckDriver();
+        $driver = new HttpCheckDriver;
         $check = Check::query()->make([
             'type' => 'http',
             'timeout_seconds' => 10,

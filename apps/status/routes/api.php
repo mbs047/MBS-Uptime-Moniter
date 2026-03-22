@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\StatusIncidentsController;
 use App\Http\Controllers\Api\ProbeRegistrationController;
+use App\Http\Controllers\Api\StatusIncidentsController;
 use App\Http\Controllers\Api\StatusServicesController;
 use App\Http\Controllers\Api\StatusSummaryController;
 use App\Http\Controllers\Auth\SubscriberController;
