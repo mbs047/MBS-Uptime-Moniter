@@ -304,7 +304,7 @@ class CheckResource extends Resource
                 ])
                     ->persistStepInQueryString('check-step')
                     ->skippable(),
-            ]);
+            ])->columns(1);
     }
 
     public static function infolist(Schema $schema): Schema
