@@ -3,12 +3,14 @@
 namespace App\Jobs;
 
 use App\Services\Status\StatusRollupService;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\InteractsWithQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
 
 class RecalculateComponentStatusJob implements ShouldQueue
 {
+    use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
 

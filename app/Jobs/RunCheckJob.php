@@ -8,13 +8,15 @@ use App\Models\Check;
 use App\Models\CheckRun;
 use App\Services\Checks\CheckDriverRegistry;
 use App\Support\Checks\CheckExecutionResult;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\InteractsWithQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\InteractsWithQueue;
 use Throwable;
 
 class RunCheckJob implements ShouldQueue
 {
+    use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
 
