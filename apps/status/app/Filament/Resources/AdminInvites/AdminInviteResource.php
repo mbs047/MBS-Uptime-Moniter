@@ -6,6 +6,7 @@ use App\Filament\Resources\AdminInvites\Pages\CreateAdminInvite;
 use App\Filament\Resources\AdminInvites\Pages\EditAdminInvite;
 use App\Filament\Resources\AdminInvites\Pages\ListAdminInvites;
 use App\Filament\Resources\AdminInvites\Pages\ViewAdminInvite;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Mail\AdminInviteMail;
 use App\Models\AdminInvite;
 use BackedEnum;
@@ -28,6 +29,8 @@ use Illuminate\Support\Facades\Mail;
 
 class AdminInviteResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = AdminInvite::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelopeOpen;

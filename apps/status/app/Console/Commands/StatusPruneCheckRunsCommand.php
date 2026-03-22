@@ -9,7 +9,7 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 #[Signature('status:prune-check-runs')]
-#[Description('Prune raw check run rows older than the configured retention window')]
+#[Description('Report raw check run rows older than the configured retention window without deleting them')]
 class StatusPruneCheckRunsCommand extends Command
 {
     /**
@@ -20,11 +20,15 @@ class StatusPruneCheckRunsCommand extends Command
         $settings = PlatformSetting::current();
         $threshold = now()->subDays($settings->raw_run_retention_days ?: 14);
 
-        $deleted = CheckRun::query()
+        $matchingRuns = CheckRun::query()
             ->where('started_at', '<', $threshold)
-            ->delete();
+            ->count();
 
-        $this->info(sprintf('Pruned %d check runs older than %s.', $deleted, $threshold->toDateTimeString()));
+        $this->warn(sprintf(
+            'Automatic pruning is disabled. %d check runs are older than %s and were preserved.',
+            $matchingRuns,
+            $threshold->toDateTimeString(),
+        ));
 
         return self::SUCCESS;
     }

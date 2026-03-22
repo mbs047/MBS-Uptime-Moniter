@@ -5,6 +5,7 @@ namespace App\Filament\Resources\RemoteIntegrations;
 use App\Enums\RemoteIntegrationAuthMode;
 use App\Enums\RemoteIntegrationSyncMode;
 use App\Enums\RemoteIntegrationSyncStatus;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\RemoteIntegrations\Pages\CreateRemoteIntegration;
 use App\Filament\Resources\RemoteIntegrations\Pages\EditRemoteIntegration;
 use App\Filament\Resources\RemoteIntegrations\Pages\ListRemoteIntegrations;
@@ -37,6 +38,8 @@ use UnitEnum;
 
 class RemoteIntegrationResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = RemoteIntegration::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedGlobeAlt;

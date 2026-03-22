@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PlatformSettings;
 
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\PlatformSettings\Pages\CreatePlatformSetting;
 use App\Filament\Resources\PlatformSettings\Pages\EditPlatformSetting;
 use App\Filament\Resources\PlatformSettings\Pages\ListPlatformSettings;
@@ -26,6 +27,8 @@ use Illuminate\Support\Str;
 
 class PlatformSettingResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = PlatformSetting::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
@@ -94,7 +97,7 @@ class PlatformSettingResource extends Resource
                             ->numeric()
                             ->required()
                             ->minValue(1)
-                            ->helperText('Raw check runs older than this can be pruned after their daily aggregates are preserved. Starts at 14 days by default.'),
+                            ->helperText('Reference retention target for raw check runs. Automatic pruning is currently disabled, so historical rows stay preserved in the database.'),
                         TextInput::make('default_failure_threshold')
                             ->default($defaults['default_failure_threshold'])
                             ->numeric()

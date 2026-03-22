@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Services;
 
 use App\Enums\ComponentStatus;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Resources\Services\Pages\EditService;
 use App\Filament\Resources\Services\Pages\ListServices;
@@ -31,6 +32,8 @@ use Illuminate\Support\Str;
 
 class ServiceResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Service::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedServerStack;

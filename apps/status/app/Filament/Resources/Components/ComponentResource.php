@@ -7,6 +7,7 @@ use App\Filament\Resources\Components\Pages\CreateComponent;
 use App\Filament\Resources\Components\Pages\EditComponent;
 use App\Filament\Resources\Components\Pages\ListComponents;
 use App\Filament\Resources\Components\Pages\ViewComponent;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Models\Component;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -28,6 +29,8 @@ use Filament\Tables\Table;
 
 class ComponentResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Component::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;

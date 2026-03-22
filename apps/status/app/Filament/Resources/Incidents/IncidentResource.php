@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Incidents;
 
 use App\Enums\IncidentSeverity;
 use App\Enums\IncidentStatus;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\Incidents\Pages\CreateIncident;
 use App\Filament\Resources\Incidents\Pages\EditIncident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
@@ -34,6 +35,8 @@ use Illuminate\Support\Str;
 
 class IncidentResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Incident::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;

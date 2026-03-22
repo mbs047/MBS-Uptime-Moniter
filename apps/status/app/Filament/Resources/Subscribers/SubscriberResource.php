@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Subscribers;
 
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\Subscribers\Pages\CreateSubscriber;
 use App\Filament\Resources\Subscribers\Pages\EditSubscriber;
 use App\Filament\Resources\Subscribers\Pages\ListSubscribers;
@@ -25,6 +26,8 @@ use Filament\Tables\Table;
 
 class SubscriberResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Subscriber::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;

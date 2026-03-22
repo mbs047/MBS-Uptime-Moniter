@@ -8,6 +8,7 @@ use App\Filament\Resources\Checks\Pages\CreateCheck;
 use App\Filament\Resources\Checks\Pages\EditCheck;
 use App\Filament\Resources\Checks\Pages\ListChecks;
 use App\Filament\Resources\Checks\Pages\ViewCheck;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Jobs\RunCheckJob;
 use App\Models\Check;
 use App\Models\Component;
@@ -41,6 +42,8 @@ use Filament\Tables\Table;
 
 class CheckResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Check::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBolt;

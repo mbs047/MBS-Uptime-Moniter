@@ -6,6 +6,7 @@ use App\Filament\Resources\Admins\Pages\CreateAdmin;
 use App\Filament\Resources\Admins\Pages\EditAdmin;
 use App\Filament\Resources\Admins\Pages\ListAdmins;
 use App\Filament\Resources\Admins\Pages\ViewAdmin;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Models\Admin;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -26,6 +27,8 @@ use Filament\Tables\Table;
 
 class AdminResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Admin::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
