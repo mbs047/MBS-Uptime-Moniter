@@ -8,13 +8,13 @@ use App\Mail\IncidentNotificationMail;
 use App\Models\Incident;
 use App\Models\Subscriber;
 use App\Services\Status\IncidentNotifier;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class IncidentNotifierTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_only_verified_active_subscribers_receive_incident_notifications(): void
     {

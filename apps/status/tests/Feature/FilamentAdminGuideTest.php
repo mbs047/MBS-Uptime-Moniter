@@ -6,12 +6,12 @@ use App\Filament\AdminDashboard;
 use App\Filament\Pages\ConnectLaravelAppsGuide;
 use App\Models\Admin;
 use App\Models\PlatformSetting;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class FilamentAdminGuideTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_dashboard_renders_quick_actions_dropdown(): void
     {

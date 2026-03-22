@@ -7,13 +7,13 @@ use App\Models\Admin;
 use App\Models\PlatformSetting;
 use App\Models\RemoteIntegration;
 use App\Models\Subscriber;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class ApiDocsPageTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_api_docs_page_renders_endpoint_catalog(): void
     {

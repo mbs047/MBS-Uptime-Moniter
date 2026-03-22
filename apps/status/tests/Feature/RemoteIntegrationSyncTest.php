@@ -11,13 +11,13 @@ use App\Models\Service;
 use App\Services\RemoteIntegrations\PushProbeRegistrationHandler;
 use App\Services\RemoteIntegrations\RemoteIntegrationSyncService;
 use App\Support\Http\RemoteIntegrationTlsOptions;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class RemoteIntegrationSyncTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_pull_sync_creates_service_components_and_checks_from_remote_metadata(): void
     {

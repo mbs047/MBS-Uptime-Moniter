@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use App\Models\PlatformSetting;
 use App\Models\RemoteIntegration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class ProbeRegistrationApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_probe_registration_requires_the_configured_bearer_token(): void
     {

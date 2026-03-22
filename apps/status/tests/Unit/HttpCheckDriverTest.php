@@ -6,14 +6,14 @@ use App\Enums\CheckRunOutcome;
 use App\Enums\ComponentStatus;
 use App\Models\Check;
 use App\Services\Checks\HttpCheckDriver;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class HttpCheckDriverTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_basic_auth_checks_require_username_and_password(): void
     {

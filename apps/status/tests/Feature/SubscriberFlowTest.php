@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Mail\SubscriberConfirmationMail;
 use App\Models\Subscriber;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class SubscriberFlowTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_subscribers_can_confirm_and_unsubscribe(): void
     {

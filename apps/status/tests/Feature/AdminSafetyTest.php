@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\Admin;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class AdminSafetyTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_signed_in_admin_cannot_disable_their_own_account(): void
     {
