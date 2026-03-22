@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a reproducible bug, regression, or unexpected behavior
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue. Please fill out the details below so the problem can be reproduced and triaged efficiently.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: Give a short description of the problem.
+      placeholder: Public incidents page returns a 500 when an incident has no updates
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps needed to reproduce the problem.
+      placeholder: |
+        1. Seed the database with ...
+        2. Visit ...
+        3. Submit ...
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the branch or commit, PHP version, database, and deployment details if relevant.
+      placeholder: |
+        Branch: main
+        Commit: abc1234
+        PHP: 8.3
+        Database: SQLite
+        Runtime: local Docker on macOS
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Paste logs, stack traces, API responses, or screenshots if available.
+      render: shell

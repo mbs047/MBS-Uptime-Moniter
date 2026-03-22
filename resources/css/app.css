@@ -1,0 +1,509 @@
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* Tailwind v4 theme tokens keep Roboto as the shared font across app styles. */
+@theme {
+    --font-sans: 'Roboto', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Roboto', ui-serif, Georgia, serif;
+    --font-mono: 'Roboto', ui-monospace, monospace;
+}
+
+:root {
+    --sand-50: #f5f0e6;
+    --sand-100: #ece4d5;
+    --sand-200: #dfd4c1;
+    --ink-950: #17120e;
+    --ink-900: #241e19;
+    --ink-700: #53493f;
+    --ink-500: #877a6d;
+    --line: rgba(37, 31, 24, 0.12);
+    --card: rgba(255, 250, 243, 0.74);
+    --card-strong: rgba(255, 251, 245, 0.92);
+    --shadow: 0 28px 72px rgba(46, 39, 29, 0.12);
+    --operational: #607a56;
+    --degraded: #b28443;
+    --partial: #bc6950;
+    --major: #8f493f;
+    --maintenance: #5b6e8a;
+    --no-data: #c4b6a4;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink-900);
+    font-family: var(--font-sans);
+    background:
+        radial-gradient(circle at top left, rgba(222, 210, 186, 0.46), transparent 30%),
+        radial-gradient(circle at top right, rgba(174, 153, 123, 0.18), transparent 26%),
+        linear-gradient(180deg, #f7f1e7 0%, #efe6d8 100%);
+}
+
+a {
+    color: inherit;
+}
+
+.status-shell {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.status-shell::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.22;
+    background-image:
+        linear-gradient(rgba(49, 40, 30, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(49, 40, 30, 0.03) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(circle at center, black 50%, transparent 100%);
+}
+
+.status-page {
+    position: relative;
+    width: min(1200px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 2rem 0 5rem;
+}
+
+.status-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.brand-mark {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.brand-kicker {
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    color: var(--ink-500);
+    font-family: var(--font-sans);
+}
+
+.brand-name {
+    font-family: var(--font-sans);
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+}
+
+.status-subtle {
+    color: var(--ink-500);
+    font-size: 0.92rem;
+    font-family: var(--font-sans);
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.8fr);
+    gap: 1.35rem;
+    align-items: start;
+}
+
+.status-card {
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(16px);
+}
+
+.status-card--hero {
+    padding: 2rem;
+}
+
+.status-card--aside,
+.status-card--section {
+    padding: 1.4rem;
+}
+
+.status-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem;
+    align-items: end;
+}
+
+.status-display {
+    font-family: var(--font-sans);
+    font-size: clamp(2.8rem, 6vw, 5.8rem);
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    margin: 0.6rem 0 1rem;
+    max-width: 9ch;
+}
+
+.status-copy {
+    max-width: 54ch;
+    color: var(--ink-700);
+    line-height: 1.75;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    border-radius: 999px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: var(--font-sans);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.status-badge::before {
+    content: '';
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.status-badge--operational {
+    color: var(--operational);
+    background: rgba(96, 122, 86, 0.1);
+}
+
+.status-badge--degraded {
+    color: var(--degraded);
+    background: rgba(178, 132, 67, 0.12);
+}
+
+.status-badge--partial_outage {
+    color: var(--partial);
+    background: rgba(188, 105, 80, 0.12);
+}
+
+.status-badge--major_outage {
+    color: var(--major);
+    background: rgba(143, 73, 63, 0.12);
+}
+
+.status-badge--maintenance {
+    color: var(--maintenance);
+    background: rgba(91, 110, 138, 0.12);
+}
+
+.status-badge--no_data {
+    color: var(--ink-500);
+    background: rgba(135, 122, 109, 0.12);
+}
+
+.kpi-stack {
+    display: grid;
+    gap: 1rem;
+    min-width: 220px;
+}
+
+.kpi-item {
+    border-top: 1px solid var(--line);
+    padding-top: 0.85rem;
+}
+
+.kpi-label {
+    font-size: 0.76rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-500);
+    font-family: var(--font-sans);
+}
+
+.kpi-value {
+    display: block;
+    margin-top: 0.4rem;
+    font-family: var(--font-sans);
+    font-size: 1.75rem;
+}
+
+.section-title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    letter-spacing: -0.03em;
+}
+
+.section-lede {
+    margin: 0.35rem 0 0;
+    color: var(--ink-700);
+    line-height: 1.65;
+}
+
+.incident-list,
+.history-list,
+.service-list,
+.timeline-list {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.1rem;
+}
+
+.incident-card,
+.history-item,
+.service-card,
+.timeline-item {
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background: var(--card-strong);
+}
+
+.incident-card,
+.history-item,
+.timeline-item {
+    padding: 1rem 1.1rem;
+}
+
+.incident-meta,
+.timeline-meta,
+.service-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    color: var(--ink-500);
+    font-size: 0.82rem;
+    font-family: var(--font-sans);
+}
+
+.incident-title,
+.history-title,
+.timeline-title {
+    margin: 0.6rem 0 0.3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.service-card {
+    padding: 1.1rem;
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.component-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) auto;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(36, 30, 25, 0.08);
+}
+
+.component-row:first-of-type {
+    border-top: 0;
+}
+
+.component-name {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.component-description {
+    margin: 0.35rem 0 0;
+    color: var(--ink-700);
+    line-height: 1.6;
+}
+
+.uptime-box {
+    display: grid;
+    justify-items: end;
+    gap: 0.55rem;
+    min-width: 220px;
+}
+
+.uptime-percent {
+    font-family: var(--font-sans);
+    font-size: 1.6rem;
+}
+
+.uptime-bars {
+    display: grid;
+    grid-template-columns: repeat(90, minmax(0, 1fr));
+    gap: 0.17rem;
+    width: min(100%, 280px);
+}
+
+.uptime-bar {
+    height: 0.85rem;
+    border-radius: 999px;
+    background: var(--no-data);
+    opacity: 0.85;
+}
+
+.uptime-bar--operational {
+    background: var(--operational);
+}
+
+.uptime-bar--degraded {
+    background: var(--degraded);
+}
+
+.uptime-bar--partial_outage {
+    background: var(--partial);
+}
+
+.uptime-bar--major_outage {
+    background: var(--major);
+}
+
+.uptime-bar--maintenance {
+    background: var(--maintenance);
+}
+
+.uptime-bar--no_data {
+    background: var(--no-data);
+}
+
+.inline-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.form-stack {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 1rem;
+}
+
+.field-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.76rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-500);
+    font-family: var(--font-sans);
+}
+
+.field-input,
+.field-textarea {
+    width: 100%;
+    border-radius: 18px;
+    border: 1px solid rgba(36, 30, 25, 0.12);
+    background: rgba(255, 255, 255, 0.75);
+    color: var(--ink-900);
+    padding: 0.85rem 1rem;
+    font: inherit;
+}
+
+.field-textarea {
+    min-height: 160px;
+    resize: vertical;
+}
+
+.button-primary,
+.button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.9rem 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    border: 0;
+    cursor: pointer;
+}
+
+.button-primary {
+    color: #fffaf3;
+    background: linear-gradient(135deg, #2d251d 0%, #5b4634 100%);
+    box-shadow: 0 20px 40px rgba(45, 37, 29, 0.2);
+}
+
+.button-secondary {
+    color: var(--ink-900);
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid var(--line);
+}
+
+.button-primary:hover,
+.button-secondary:hover {
+    transform: translateY(-1px);
+}
+
+.flash-banner {
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 18px;
+    border: 1px solid rgba(96, 122, 86, 0.14);
+    background: rgba(96, 122, 86, 0.08);
+    color: var(--ink-900);
+}
+
+.auth-wrap {
+    display: grid;
+    place-items: center;
+    min-height: calc(100vh - 4rem);
+}
+
+.auth-card {
+    width: min(540px, 100%);
+    padding: 1.6rem;
+}
+
+.auth-title {
+    margin: 0.4rem 0 0.65rem;
+    font-family: var(--font-sans);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 0.94;
+}
+
+.muted {
+    color: var(--ink-700);
+    line-height: 1.7;
+}
+
+@media (max-width: 960px) {
+    .status-grid,
+    .status-hero-grid,
+    .component-row {
+        grid-template-columns: 1fr;
+    }
+
+    .status-topbar,
+    .service-header {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .uptime-box {
+        justify-items: start;
+    }
+}

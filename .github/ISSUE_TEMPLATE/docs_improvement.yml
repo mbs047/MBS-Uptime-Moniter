@@ -1,0 +1,33 @@
+name: Documentation improvement
+description: Suggest improvements to setup guides, examples, or project docs
+title: "[Docs]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Documentation issues are valuable. Please point to the exact page or section that needs attention.
+
+  - type: input
+    id: location
+    attributes:
+      label: Documentation location
+      description: Which file, section, or page needs to be updated?
+      placeholder: README.md quick start section
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is missing or incorrect?
+      description: Describe the gap, confusion, or inaccurate instruction.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      description: Share the change you would like to see.
+    validations:
+      required: true
