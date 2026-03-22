@@ -146,7 +146,6 @@
                                     tag="a"
                                     target="_blank"
                                     color="gray"
-                                    outlined
                                     :icon="Heroicon::OutlinedArrowTopRightOnSquare"
                                 >
                                     Package repo
