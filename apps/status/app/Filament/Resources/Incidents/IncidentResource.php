@@ -142,16 +142,22 @@ class IncidentResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('title'),
-                TextEntry::make('status')
-                    ->badge()
-                    ->formatStateUsing(fn (?IncidentStatus $state): ?string => $state?->label()),
-                TextEntry::make('severity')
-                    ->badge()
-                    ->formatStateUsing(fn (?IncidentSeverity $state): ?string => $state?->label()),
-                TextEntry::make('summary')
+                Section::make('Incident summary')
+                    ->description('Review the public incident state, severity, and summary before updating the timeline or publishing changes.')
+                    ->schema([
+                        TextEntry::make('title'),
+                        TextEntry::make('status')
+                            ->badge()
+                            ->formatStateUsing(fn (?IncidentStatus $state): ?string => $state?->label()),
+                        TextEntry::make('severity')
+                            ->badge()
+                            ->formatStateUsing(fn (?IncidentSeverity $state): ?string => $state?->label()),
+                        TextEntry::make('summary')
+                            ->columnSpanFull()
+                            ->placeholder('No summary provided'),
+                    ])
                     ->columnSpanFull()
-                    ->placeholder('No summary provided'),
+                    ->columns(2),
             ]);
     }
 

@@ -90,14 +90,20 @@ class ServiceResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
-                TextEntry::make('slug'),
-                TextEntry::make('status')
-                    ->badge()
-                    ->formatStateUsing(fn (?ComponentStatus $state): ?string => $state?->label()),
-                TextEntry::make('description')
+                Section::make('Service summary')
+                    ->description('Review the public service identity, current status, and description in one contained summary.')
+                    ->schema([
+                        TextEntry::make('name'),
+                        TextEntry::make('slug'),
+                        TextEntry::make('status')
+                            ->badge()
+                            ->formatStateUsing(fn (?ComponentStatus $state): ?string => $state?->label()),
+                        TextEntry::make('description')
+                            ->columnSpanFull()
+                            ->placeholder('No description provided'),
+                    ])
                     ->columnSpanFull()
-                    ->placeholder('No description provided'),
+                    ->columns(2),
             ]);
     }
 

@@ -19,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -39,24 +40,41 @@ class ComponentResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('service_id')
-                    ->relationship('service', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                TextInput::make('display_name')
-                    ->required()
-                    ->maxLength(255),
-                Textarea::make('description')
-                    ->rows(3)
-                    ->columnSpanFull(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
-                Toggle::make('is_public')
-                    ->default(true)
-                    ->required(),
+                Section::make('Component details')
+                    ->description('Components are the public items inside a service, such as API workers, billing jobs, or email delivery.')
+                    ->schema([
+                        Select::make('service_id')
+                            ->relationship('service', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->helperText('Choose the service this public component belongs to.'),
+                        TextInput::make('display_name')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('This is the public label visitors will see on the status page.'),
+                        Textarea::make('description')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->helperText('Optional context explaining what the component does.'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
+                Section::make('Display controls')
+                    ->description('Use these values to manage public visibility and ordering without changing the component identity.')
+                    ->schema([
+                        TextInput::make('sort_order')
+                            ->numeric()
+                            ->default(0)
+                            ->required()
+                            ->helperText('Lower values appear first within the service group.'),
+                        Toggle::make('is_public')
+                            ->default(true)
+                            ->required()
+                            ->helperText('Hidden components stay manageable in admin without appearing publicly.'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 
@@ -64,12 +82,19 @@ class ComponentResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('service.name'),
-                TextEntry::make('display_name'),
-                TextEntry::make('status')
-                    ->badge(),
-                TextEntry::make('description')
-                    ->columnSpanFull(),
+                Section::make('Component summary')
+                    ->description('Review the parent service, current public status, and descriptive context for this component.')
+                    ->schema([
+                        TextEntry::make('service.name'),
+                        TextEntry::make('display_name'),
+                        TextEntry::make('status')
+                            ->badge(),
+                        TextEntry::make('description')
+                            ->columnSpanFull()
+                            ->placeholder('No description provided'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 

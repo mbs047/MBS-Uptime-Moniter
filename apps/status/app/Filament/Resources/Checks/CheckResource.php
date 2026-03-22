@@ -304,17 +304,23 @@ class CheckResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('component.display_name'),
-                TextEntry::make('name'),
-                TextEntry::make('type')
-                    ->badge()
-                    ->formatStateUsing(fn (?CheckType $state): ?string => $state?->label()),
-                TextEntry::make('latest_severity')
-                    ->badge()
-                    ->formatStateUsing(fn (?ComponentStatus $state): ?string => $state?->label()),
-                TextEntry::make('latest_error_summary')
+                Section::make('Check summary')
+                    ->description('Review the component, check type, and latest observed health outcome before running or editing the probe.')
+                    ->schema([
+                        TextEntry::make('component.display_name'),
+                        TextEntry::make('name'),
+                        TextEntry::make('type')
+                            ->badge()
+                            ->formatStateUsing(fn (?CheckType $state): ?string => $state?->label()),
+                        TextEntry::make('latest_severity')
+                            ->badge()
+                            ->formatStateUsing(fn (?ComponentStatus $state): ?string => $state?->label()),
+                        TextEntry::make('latest_error_summary')
+                            ->columnSpanFull()
+                            ->placeholder('No error recorded'),
+                    ])
                     ->columnSpanFull()
-                    ->placeholder('No error recorded'),
+                    ->columns(2),
             ]);
     }
 

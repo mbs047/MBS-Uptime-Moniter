@@ -16,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -36,10 +37,16 @@ class SubscriberResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('email')
-                    ->required()
-                    ->email()
-                    ->maxLength(255),
+                Section::make('Subscriber details')
+                    ->description('Subscribers receive incident emails only after they confirm their address and stay subscribed.')
+                    ->schema([
+                        TextInput::make('email')
+                            ->required()
+                            ->email()
+                            ->maxLength(255)
+                            ->helperText('Use the address that should receive published incident create, update, and resolve emails.'),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -47,12 +54,20 @@ class SubscriberResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('email'),
-                IconEntry::make('verified_at')
-                    ->boolean()
-                    ->state(fn (Subscriber $record) => filled($record->verified_at)),
-                TextEntry::make('unsubscribed_at')
-                    ->dateTime(),
+                Section::make('Subscriber summary')
+                    ->description('Review whether this recipient is verified and still eligible to receive incident emails.')
+                    ->schema([
+                        TextEntry::make('email')
+                            ->copyable(),
+                        IconEntry::make('verified_at')
+                            ->boolean()
+                            ->state(fn (Subscriber $record) => filled($record->verified_at)),
+                        TextEntry::make('unsubscribed_at')
+                            ->dateTime()
+                            ->placeholder('Still subscribed'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 

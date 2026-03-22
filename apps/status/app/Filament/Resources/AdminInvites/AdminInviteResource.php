@@ -70,27 +70,34 @@ class AdminInviteResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('name')
-                    ->placeholder('Not provided'),
-                TextEntry::make('email')
-                    ->copyable(),
-                TextEntry::make('token')
-                    ->label('Invite URL')
-                    ->formatStateUsing(fn (string $state): string => route('admin.invites.show', $state))
-                    ->copyable(),
-                TextEntry::make('status')
-                    ->state(fn (AdminInvite $record): string => static::getInviteStatusLabel($record))
-                    ->badge()
-                    ->color(fn (string $state): string => static::getInviteStatusColor($state)),
-                TextEntry::make('creator.email')
-                    ->label('Created by')
-                    ->placeholder('Initial setup'),
-                TextEntry::make('expires_at')
-                    ->dateTime()
-                    ->placeholder('Does not expire'),
-                TextEntry::make('accepted_at')
-                    ->dateTime()
-                    ->placeholder('Pending acceptance'),
+                Section::make('Invite details')
+                    ->description('Review the invite state, acceptance link, creator, and timing in one contained record summary.')
+                    ->schema([
+                        TextEntry::make('name')
+                            ->placeholder('Not provided'),
+                        TextEntry::make('email')
+                            ->copyable(),
+                        TextEntry::make('token')
+                            ->label('Invite URL')
+                            ->formatStateUsing(fn (string $state): string => route('admin.invites.show', $state))
+                            ->copyable()
+                            ->columnSpanFull(),
+                        TextEntry::make('status')
+                            ->state(fn (AdminInvite $record): string => static::getInviteStatusLabel($record))
+                            ->badge()
+                            ->color(fn (string $state): string => static::getInviteStatusColor($state)),
+                        TextEntry::make('creator.email')
+                            ->label('Created by')
+                            ->placeholder('Initial setup'),
+                        TextEntry::make('expires_at')
+                            ->dateTime()
+                            ->placeholder('Does not expire'),
+                        TextEntry::make('accepted_at')
+                            ->dateTime()
+                            ->placeholder('Pending acceptance'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 

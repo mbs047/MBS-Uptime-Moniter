@@ -137,18 +137,24 @@ class PlatformSettingResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('brand_name'),
-                TextEntry::make('brand_tagline')
-                    ->placeholder('No tagline configured'),
-                TextEntry::make('support_email')
-                    ->placeholder('No public support email'),
-                TextEntry::make('probe_registration_token')
-                    ->placeholder('Not configured')
-                    ->copyable(),
-                TextEntry::make('uptime_window_days'),
-                TextEntry::make('raw_run_retention_days'),
-                TextEntry::make('default_failure_threshold'),
-                TextEntry::make('default_recovery_threshold'),
+                Section::make('Platform settings summary')
+                    ->description('Review the public brand settings, registration token state, and default monitoring thresholds in one contained overview.')
+                    ->schema([
+                        TextEntry::make('brand_name'),
+                        TextEntry::make('brand_tagline')
+                            ->placeholder('No tagline configured'),
+                        TextEntry::make('support_email')
+                            ->placeholder('No public support email'),
+                        TextEntry::make('probe_registration_token')
+                            ->placeholder('Not configured')
+                            ->copyable(),
+                        TextEntry::make('uptime_window_days'),
+                        TextEntry::make('raw_run_retention_days'),
+                        TextEntry::make('default_failure_threshold'),
+                        TextEntry::make('default_recovery_threshold'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 

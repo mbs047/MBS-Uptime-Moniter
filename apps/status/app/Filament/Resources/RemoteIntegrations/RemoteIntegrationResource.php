@@ -169,34 +169,40 @@ class RemoteIntegrationResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('name')
-                    ->placeholder('Pending first sync'),
-                TextEntry::make('base_url')
-                    ->copyable(),
-                TextEntry::make('metadata_url')
-                    ->copyable(),
-                TextEntry::make('health_url')
-                    ->copyable(),
-                TextEntry::make('sync_mode')
-                    ->badge()
-                    ->formatStateUsing(fn (?RemoteIntegrationSyncMode $state): ?string => $state?->label()),
-                TextEntry::make('auth_mode')
-                    ->badge()
-                    ->formatStateUsing(fn (?RemoteIntegrationAuthMode $state): ?string => $state?->label()),
-                TextEntry::make('service.name')
-                    ->label('Linked service')
-                    ->placeholder('Will be created on first sync'),
-                TextEntry::make('remote_app_id')
-                    ->placeholder('Not synced yet'),
-                TextEntry::make('last_sync_status')
-                    ->badge()
-                    ->formatStateUsing(fn (?RemoteIntegrationSyncStatus $state): ?string => $state?->label()),
-                TextEntry::make('last_synced_at')
-                    ->since()
-                    ->placeholder('Never synced'),
-                TextEntry::make('last_sync_error')
+                Section::make('Remote integration summary')
+                    ->description('Review the remote endpoints, linked local service, and latest sync status before changing credentials or resyncing.')
+                    ->schema([
+                        TextEntry::make('name')
+                            ->placeholder('Pending first sync'),
+                        TextEntry::make('base_url')
+                            ->copyable(),
+                        TextEntry::make('metadata_url')
+                            ->copyable(),
+                        TextEntry::make('health_url')
+                            ->copyable(),
+                        TextEntry::make('sync_mode')
+                            ->badge()
+                            ->formatStateUsing(fn (?RemoteIntegrationSyncMode $state): ?string => $state?->label()),
+                        TextEntry::make('auth_mode')
+                            ->badge()
+                            ->formatStateUsing(fn (?RemoteIntegrationAuthMode $state): ?string => $state?->label()),
+                        TextEntry::make('service.name')
+                            ->label('Linked service')
+                            ->placeholder('Will be created on first sync'),
+                        TextEntry::make('remote_app_id')
+                            ->placeholder('Not synced yet'),
+                        TextEntry::make('last_sync_status')
+                            ->badge()
+                            ->formatStateUsing(fn (?RemoteIntegrationSyncStatus $state): ?string => $state?->label()),
+                        TextEntry::make('last_synced_at')
+                            ->since()
+                            ->placeholder('Never synced'),
+                        TextEntry::make('last_sync_error')
+                            ->columnSpanFull()
+                            ->placeholder('No sync errors recorded'),
+                    ])
                     ->columnSpanFull()
-                    ->placeholder('No sync errors recorded'),
+                    ->columns(2),
             ]);
     }
 

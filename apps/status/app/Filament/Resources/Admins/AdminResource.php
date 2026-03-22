@@ -79,19 +79,25 @@ class AdminResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
-                TextEntry::make('email')
-                    ->copyable(),
-                IconEntry::make('is_active')
-                    ->boolean(),
-                TextEntry::make('email_verified_at')
-                    ->dateTime()
-                    ->placeholder('Not verified yet'),
-                TextEntry::make('last_login_at')
-                    ->dateTime()
-                    ->placeholder('No login recorded'),
-                TextEntry::make('created_at')
-                    ->dateTime(),
+                Section::make('Admin account')
+                    ->description('Review the core access state, verification status, and login activity for this administrator.')
+                    ->schema([
+                        TextEntry::make('name'),
+                        TextEntry::make('email')
+                            ->copyable(),
+                        IconEntry::make('is_active')
+                            ->boolean(),
+                        TextEntry::make('email_verified_at')
+                            ->dateTime()
+                            ->placeholder('Not verified yet'),
+                        TextEntry::make('last_login_at')
+                            ->dateTime()
+                            ->placeholder('No login recorded'),
+                        TextEntry::make('created_at')
+                            ->dateTime(),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 
