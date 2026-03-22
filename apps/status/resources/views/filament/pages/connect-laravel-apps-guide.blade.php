@@ -232,6 +232,27 @@
                             <div
                                 style="
                                     display: grid;
+                                    gap: 0.55rem;
+                                    padding: 0.95rem 1rem;
+                                    border-radius: 1rem;
+                                    border: 1px solid rgba(231, 229, 228, 1);
+                                    background: rgba(250, 250, 249, 1);
+                                "
+                            >
+                                <x-filament::badge color="gray" :icon="Heroicon::OutlinedKey">
+                                    Remote bearer token placeholder
+                                </x-filament::badge>
+
+                                <code style="word-break: break-all; font-size: 0.9rem;">YOUR_STATUS_PROBE_TOKEN</code>
+
+                                <span style="font-size: 0.92rem; line-height: 1.65; color: rgb(87, 83, 78);">
+                                    Replace this with the remote app <code>STATUS_PROBE_TOKEN</code> value from its <code>.env</code> after running <code>php artisan status-probe:install</code>.
+                                </span>
+                            </div>
+
+                            <div
+                                style="
+                                    display: grid;
                                     gap: 0.75rem;
                                     padding: 1rem;
                                     border-radius: 1rem;
