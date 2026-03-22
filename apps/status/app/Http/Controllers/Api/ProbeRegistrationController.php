@@ -16,7 +16,11 @@ class ProbeRegistrationController extends Controller
 
     public function __invoke(Request $request): JsonResponse
     {
-        abort_unless($this->hasValidToken($request), 401);
+        if (! $this->hasValidToken($request)) {
+            return response()->json([
+                'message' => $this->registrationErrorMessage($request),
+            ], 401);
+        }
 
         $integration = $this->registrations->handle($request->all());
 
@@ -35,5 +39,20 @@ class ProbeRegistrationController extends Controller
         return filled($expected)
             && filled($provided)
             && hash_equals((string) $expected, (string) $provided);
+    }
+
+    protected function registrationErrorMessage(Request $request): string
+    {
+        $expected = PlatformSetting::current()->probe_registration_token;
+
+        if (! filled($expected)) {
+            return 'This monitor cannot accept probe registrations until a probe registration token is configured in Platform Settings.';
+        }
+
+        if (! filled($request->bearerToken())) {
+            return 'Probe registration token is missing. Copy the current monitor token from Platform Settings and set it as STATUS_MONITOR_TOKEN in the remote app.';
+        }
+
+        return 'Probe registration token is invalid. Copy the current monitor token from Platform Settings and update STATUS_MONITOR_TOKEN in the remote app.';
     }
 }
