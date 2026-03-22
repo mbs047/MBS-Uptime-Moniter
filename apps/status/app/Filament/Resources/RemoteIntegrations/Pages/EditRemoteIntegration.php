@@ -9,11 +9,14 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 
 class EditRemoteIntegration extends EditRecord
 {
     protected static string $resource = RemoteIntegrationResource::class;
+
+    protected Width|string|null $maxContentWidth = Width::Full;
 
     protected ?string $subheading = 'Update connection details here when the remote app changes base URLs, package paths, or authentication secrets.';
 
