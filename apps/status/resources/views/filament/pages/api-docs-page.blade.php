@@ -29,7 +29,7 @@
             description="Unauthenticated JSON endpoints for your public status page, embeds, or downstream consumers."
             :icon="Heroicon::OutlinedGlobeAlt"
         >
-            <div style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));">
+            <div style="display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr);">
                 @foreach ($endpointCatalog['public'] as $endpoint)
                     @php
                         $response = $endpointResponses[$endpoint['key']] ?? null;
