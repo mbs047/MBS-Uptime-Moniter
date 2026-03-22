@@ -134,10 +134,6 @@
 
             <div class="service-stack">
                 @foreach ($services as $service)
-                    @php
-                        $serviceUptime = collect($service['components'])->avg('uptime_90d_percent') ?? 0;
-                    @endphp
-
                     <article class="service-panel">
                         <div class="service-panel__header">
                             <div>
@@ -152,8 +148,46 @@
                             </div>
 
                             <div class="service-panel__summary">
-                                <span>{{ count($service['components']) }} component{{ count($service['components']) === 1 ? '' : 's' }}</span>
-                                <strong>{{ number_format((float) $serviceUptime, 2) }}% uptime</strong>
+                                <span>{{ $service['component_count'] }} component{{ $service['component_count'] === 1 ? '' : 's' }}</span>
+                                <strong>{{ number_format((float) $service['uptime_90d_percent'], 2) }}% uptime</strong>
+                            </div>
+                        </div>
+
+                        <div class="service-uptime">
+                            <div class="service-uptime__header">
+                                <span class="service-uptime__label">90-day service uptime</span>
+                                <span class="service-uptime__hint">Hover a bar to inspect that day.</span>
+                            </div>
+
+                            <div class="service-uptime__track" aria-label="90 day service uptime history">
+                                @foreach ($service['uptime_bars'] as $bar)
+                                    <div class="service-uptime__cell">
+                                        <span
+                                            class="service-uptime__bar service-uptime__bar--{{ $bar['state'] }}"
+                                            title="{{ $bar['date_label'] }}{{ $bar['percentage'] !== null ? ': '.number_format($bar['percentage'], 2).'%' : ': no data' }}"
+                                        ></span>
+
+                                        <div class="service-uptime__tooltip" role="tooltip">
+                                            <p class="service-uptime__tooltip-date">{{ $bar['date_label'] }}</p>
+                                            <p class="service-uptime__tooltip-stat">
+                                                @if ($bar['percentage'] !== null)
+                                                    {{ number_format($bar['percentage'], 2) }}% uptime
+                                                @else
+                                                    No uptime data recorded
+                                                @endif
+                                            </p>
+
+                                            <div class="service-uptime__tooltip-list">
+                                                @foreach ($bar['messages'] as $message)
+                                                    <div class="service-uptime__tooltip-item">
+                                                        <span class="service-uptime__tooltip-dot service-uptime__tooltip-dot--{{ $message['severity'] }}"></span>
+                                                        <span>{{ $message['message'] }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
 
@@ -179,18 +213,6 @@
                                                 @endforeach
                                             </div>
                                         @endif
-                                    </div>
-
-                                    <div class="component-item__health">
-                                        <div class="uptime-summary">
-                                            <span class="uptime-summary__label">90-day uptime</span>
-                                            <strong>{{ number_format((float) $serviceComponent['uptime_90d_percent'], 2) }}%</strong>
-                                        </div>
-                                        <div class="uptime-bars" aria-label="90 day uptime bars">
-                                            @foreach ($serviceComponent['uptime_bars'] as $bar)
-                                                <span class="uptime-bar uptime-bar--{{ $bar['state'] }}" title="{{ $bar['day'] }}{{ $bar['percentage'] !== null ? ': '.number_format($bar['percentage'], 2).'%' : ': no data' }}"></span>
-                                            @endforeach
-                                        </div>
                                     </div>
                                 </article>
                             @endforeach
