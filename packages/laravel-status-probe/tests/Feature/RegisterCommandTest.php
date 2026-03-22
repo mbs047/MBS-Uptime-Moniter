@@ -49,4 +49,24 @@ class RegisterCommandTest extends TestCase
             ->expectsOutputToContain('STATUS_MONITOR_CA_PATH=/path/to/local-ca.pem')
             ->assertFailed();
     }
+
+    public function test_register_command_explains_monitor_token_failures(): void
+    {
+        config([
+            'status-probe.monitor.url' => 'https://uptime.example.test',
+            'status-probe.monitor.token' => 'wrong-token',
+        ]);
+
+        Http::fake([
+            'https://uptime.example.test/api/integrations/probes/register' => Http::response([
+                'message' => 'Probe registration token is invalid. Copy the current monitor token from Platform Settings and update STATUS_MONITOR_TOKEN.',
+            ], 401),
+        ]);
+
+        $this->artisan('status-probe:register')
+            ->expectsOutput('The status monitor rejected the registration request.')
+            ->expectsOutputToContain('Probe registration token is invalid')
+            ->expectsOutputToContain('STATUS_MONITOR_TOKEN must exactly match the monitor probe registration token in Platform Settings')
+            ->assertFailed();
+    }
 }

@@ -19,7 +19,27 @@ class ProbeRegistrationApiTest extends TestCase
         ]);
 
         $this->postJson('/api/integrations/probes/register', $this->payload())
-            ->assertUnauthorized();
+            ->assertUnauthorized()
+            ->assertJsonPath(
+                'message',
+                'Probe registration token is missing. Copy the current monitor token from Platform Settings and set it as STATUS_MONITOR_TOKEN in the remote app.',
+            );
+    }
+
+    public function test_probe_registration_reports_invalid_bearer_token_clearly(): void
+    {
+        PlatformSetting::query()->create([
+            'brand_name' => 'Status Center',
+            'probe_registration_token' => 'monitor-secret',
+        ]);
+
+        $this->withToken('wrong-token')
+            ->postJson('/api/integrations/probes/register', $this->payload())
+            ->assertUnauthorized()
+            ->assertJsonPath(
+                'message',
+                'Probe registration token is invalid. Copy the current monitor token from Platform Settings and update STATUS_MONITOR_TOKEN in the remote app.',
+            );
     }
 
     public function test_probe_registration_creates_or_updates_an_integration(): void
