@@ -11,12 +11,13 @@ class RemoteIntegrationResourceTest extends TestCase
     public function test_tls_sync_failures_include_local_https_guidance(): void
     {
         $message = RemoteIntegrationResource::describeSyncFailure(
-            new RuntimeException('cURL error 35: TLS connect error for https://mbs-saas.test/status/metadata'),
+            new RuntimeException('cURL error 35: TLS connect error: error:0200008A:rsa routines::invalid padding for https://mbs-saas.test/status/metadata'),
         );
 
-        $this->assertStringContainsString('cURL error 35: TLS connect error', $message);
-        $this->assertStringContainsString('disable Verify TLS certificates', $message);
-        $this->assertStringContainsString('Custom CA bundle path', $message);
+        $this->assertSame(
+            'TLS connect error: For local or self-signed HTTPS endpoints such as *.test, open Endpoints & auth -> TLS and either disable Verify TLS certificates or set a Custom CA bundle path.',
+            $message,
+        );
     }
 
     public function test_non_tls_sync_failures_are_left_unchanged(): void

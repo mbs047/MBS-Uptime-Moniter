@@ -316,8 +316,7 @@ class RemoteIntegrationResource extends Resource
             return $message;
         }
 
-        return $message.PHP_EOL.PHP_EOL
-            .'For local or self-signed HTTPS endpoints such as *.test, open Endpoints & auth -> TLS and either disable Verify TLS certificates or set a Custom CA bundle path.';
+        return 'TLS connect error: For local or self-signed HTTPS endpoints such as *.test, open Endpoints & auth -> TLS and either disable Verify TLS certificates or set a Custom CA bundle path.';
     }
 
     /**
