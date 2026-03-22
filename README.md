@@ -5,44 +5,87 @@
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
 [![License](https://img.shields.io/github/license/mbs047/MBS-Uptime-Moniter)](LICENSE)
 
-MBS Uptime Monitor is a self-hosted uptime monitoring and status page application built with Laravel, Filament, and Livewire. It gives teams a branded public status page, operational APIs, incident publishing tools, subscriber notifications, and automated service health rollups in one codebase.
+MBS Uptime Monitor is a self-hosted status page and uptime monitoring platform
+built with Laravel, Filament, and Livewire. It combines a public status site, a
+private operations panel, automated checks, incident publishing, subscriber
+notifications, and a Laravel probe package for monitored applications.
 
-This repository is organized as a workspace. The Laravel application now lives in `apps/status`, while the repo root is reserved for shared docs, API contracts, automation, and future top-level folders.
+This repository is a workspace repo. The monitor application lives in
+`apps/status`, while the repository root is reserved for shared documentation,
+API contracts, GitHub automation, and package publishing support.
 
-## Highlights
+## What This Repository Contains
 
-- Public status page with service, component, incident, and uptime history views
-- Automated check drivers for HTTP, SSL, DNS, and TCP monitoring
-- Companion Laravel probe package for automatic monitored-app registration
-- Incident publishing workflow with updates, timelines, and severity mapping
-- Subscriber confirmation and unsubscribe flows for status notifications
-- Filament-powered admin panel for services, components, checks, incidents, and settings
-- Daily uptime aggregation and raw check retention jobs for long-term reporting
-- JSON endpoints for summary, services, incidents, and subscriber signups
+- `apps/status`
+  The main monitor application with the public status page, Filament admin
+  panel, API endpoints, incident workflow, remote integrations, and check
+  engine.
+- `packages/laravel-status-probe`
+  The Composer package that installs authenticated health and metadata endpoints
+  inside another Laravel app so it can connect to the monitor.
+- `api/status`
+  Public API docs, schema, and example payloads for the monitor app.
+- `documents`
+  Long-form documentation for installation, deployment, operations, and
+  integration workflows.
 
-## Stack
+## Product Capabilities
 
-- Laravel 13
-- PHP 8.3+
-- Filament 5
-- Livewire 4
-- Vite
-- Tailwind CSS 4
-- PHPUnit 12
+- public status overview at `/`
+- incident detail pages with update timelines
+- Filament admin panel at `/admin`
+- automated checks for `http`, `ssl`, `dns`, and `tcp`
+- manual incident workflow with published and resolved timelines
+- subscriber confirmation and unsubscribe flows
+- daily uptime aggregation for 90-day reporting
+- remote integration support for package-enabled Laravel apps
+- public JSON endpoints for summary, services, incidents, and subscriber signups
 
 ## Workspace Layout
 
 ```text
 .
-├── api/status/          # Endpoint contracts, specs, and examples
-├── apps/status/         # Laravel application
-├── documents/           # Long-form repository documentation
-├── packages/            # Composer-installable workspace packages
-├── README.md            # Repository entrypoint
-└── .github/             # CI, templates, and repo automation
+├── api/status/                  # API contract, OpenAPI schema, example payloads
+├── apps/status/                 # Laravel monitor application
+├── documents/                   # Long-form documentation
+├── packages/laravel-status-probe/ # Composer package for monitored Laravel apps
+├── README.md                    # Repository entrypoint
+└── .github/                     # CI, workflows, issue and PR templates
 ```
 
+## Documentation Map
+
+Start here depending on what you are trying to do:
+
+- [documents/getting-started.md](documents/getting-started.md)
+  Install the monitor locally, boot the app, and create the first admin.
+- [documents/monitoring-laravel-apps.md](documents/monitoring-laravel-apps.md)
+  Connect other Laravel apps by using the probe package or manual checks.
+- [documents/deployment-and-operations.md](documents/deployment-and-operations.md)
+  Production deployment, cron, queue workers, mail, upgrades, and operational
+  runbooks.
+- [documents/architecture.md](documents/architecture.md)
+  Domain model, status precedence, check engine behavior, and integration
+  architecture.
+- [api/status/README.md](api/status/README.md)
+  Public API reference and example payloads.
+- [packages/laravel-status-probe/README.md](packages/laravel-status-probe/README.md)
+  Public package README for the monitored-app probe package.
+
+The package is also published from its own repository:
+
+- [MBS-Uptime-Moniter-Package](https://github.com/mbs047/MBS-Uptime-Moniter-Package)
+
 ## Quick Start
+
+### Prerequisites
+
+- PHP `8.3+`
+- Composer `2.x`
+- Node.js `22+`
+- SQLite, MySQL, or PostgreSQL
+
+### Local Install
 
 ```bash
 make status-install
@@ -53,81 +96,88 @@ make status-artisan CMD="migrate --seed"
 make status-dev
 ```
 
-In a second terminal, run the scheduler so due checks and uptime maintenance jobs continue to execute locally:
+In a second terminal, run the scheduler:
 
 ```bash
 make status-artisan CMD="schedule:work"
 ```
 
-## First Admin Setup
+`make status-dev` already starts:
 
-The initial admin bootstrap is protected by `APP_SETUP_TOKEN`.
+- the Laravel development server
+- a queue listener
+- log tailing
+- the Vite dev server
 
-1. Set a strong `APP_SETUP_TOKEN` value in `apps/status/.env`.
-2. Start the app locally or deploy it.
-3. Visit `/admin/setup?token=YOUR_TOKEN`.
-4. Submit the bootstrap form to generate the first admin invite.
+### First Admin Bootstrap
+
+The first admin invite is protected by `APP_SETUP_TOKEN`.
+
+1. Set `APP_SETUP_TOKEN` in `apps/status/.env`.
+2. Start the app.
+3. Open `/admin/setup?token=YOUR_TOKEN`.
+4. Submit the setup form.
 5. Complete the invite flow and sign in at `/admin`.
 
-Once the first admin account exists, the bootstrap route is no longer available.
+Once the first admin exists, the setup route disables itself.
 
-## Available Endpoints
+## Public Endpoints
 
-### Public web routes
+### Web Routes
 
-- `/` - public status page
-- `/incidents/{incident:slug}` - incident detail page
-- `/status/subscribers/confirm/{token}` - subscriber confirmation
-- `/status/subscribers/unsubscribe/{token}` - subscriber unsubscribe
+- `GET /`
+- `GET /incidents/{incident:slug}`
+- `GET /status/subscribers/confirm/{token}`
+- `GET /status/subscribers/unsubscribe/{token}`
 
-### Public API routes
+### Public API Routes
 
 - `GET /api/status/summary`
 - `GET /api/status/services`
 - `GET /api/status/incidents`
 - `POST /api/status/subscribers`
 
-## Root Commands
+### Private Integration Route
 
-Use the root `Makefile` to work with the nested Laravel app without leaving the repository root:
+- `POST /api/integrations/probes/register`
 
-- `make status-install`
-- `make status-dev`
-- `make status-test`
-- `make status-build`
-- `make status-pint`
-- `make status-artisan CMD="migrate --seed"`
-- `make probe-install`
-- `make probe-test`
-- `make probe-composer CMD="update --dry-run"`
+This private route is for package-enabled Laravel apps that push their
+registration payload into the monitor. It requires a bearer token configured in
+the monitor's Platform Settings.
 
-## Local Development
+## Working From The Repo Root
 
-All application runtime files live under `apps/status`, including:
-
-- `apps/status/.env`
-- `apps/status/database/database.sqlite`
-- `apps/status/public`
-- `apps/status/routes/api.php`
-
-The repository includes a root wrapper that starts the Laravel app, queue worker, log tailing, and Vite dev server together:
+Use the root `Makefile` to work with the nested Laravel app and package without
+changing directories:
 
 ```bash
+make status-install
 make status-dev
-```
-
-Useful additional commands:
-
-```bash
-make status-pint
 make status-test
 make status-build
-make status-artisan CMD="status:dispatch-due-checks"
-make status-artisan CMD="status:refresh-daily-uptime --days=2"
-make status-artisan CMD="status:prune-check-runs"
+make status-pint
+make status-artisan CMD="migrate --seed"
 make probe-install
 make probe-test
+make probe-composer CMD="update --dry-run"
 ```
+
+## Status Monitor and Probe Package
+
+The monitor and the package are designed to work together:
+
+- install the monitor from this repository
+- install `mbs047/laravel-status-probe` inside each Laravel app you want to
+  monitor
+- let the monitor either pull metadata from the app or accept a pushed
+  registration payload
+- the monitor creates one service and one or more component checks from the
+  package metadata
+
+For the full walkthrough, see:
+
+- [documents/monitoring-laravel-apps.md](documents/monitoring-laravel-apps.md)
+- [packages/laravel-status-probe/docs/connecting-to-monitor.md](packages/laravel-status-probe/docs/connecting-to-monitor.md)
 
 ## Testing and Quality
 
@@ -140,49 +190,35 @@ make status-build
 make probe-test
 ```
 
-The repository also includes GitHub Actions CI and Dependabot configuration for ongoing maintenance.
+## Deployment Note
 
-## Laravel Probe Package
+If you deploy the monitor app from this monorepo, the web root must point to:
 
-The workspace now includes a Composer package at `packages/laravel-status-probe`.
+```text
+apps/status/public
+```
 
-- Package name: `mbs047/laravel-status-probe`
-- Package-facing repository: `https://github.com/mbs047/MBS-Uptime-Moniter-Package`
-- Purpose: install authenticated health and metadata endpoints into another Laravel app
-- Local package commands:
-  - `make probe-install`
-  - `make probe-test`
-  - `make probe-composer CMD="update --dry-run"`
+Do not point your web server at the repository root.
 
-Once installed in another Laravel app, the package provides:
+## Package Publishing Note
 
-- a configurable health endpoint, default `status/health`
-- a configurable metadata endpoint, default `status/metadata`
-- `php artisan status-probe:install`
-- `php artisan status-probe:register`
-- `php artisan status-probe:heartbeat scheduler`
-
-## API Docs
-
-Repository-level API docs and examples live in `api/status/`.
-
-## Deployment
-
-If your deployment previously assumed the Laravel app lived at the repo root, update it to use `apps/status/public` as the web root.
-
-The package split workflow publishes `packages/laravel-status-probe` to `mbs047/MBS-Uptime-Moniter-Package` so it can be registered with Packagist independently of the monorepo root.
+The package subtree at `packages/laravel-status-probe` is published to the
+package-facing repository so Packagist can read a root-level `composer.json`
+there. The split-publish workflow supports both automatic publishing from
+`main` and manual dispatch from GitHub Actions.
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
 ## Security
 
-Please review [SECURITY.md](SECURITY.md) for vulnerability reporting instructions.
+Please review [SECURITY.md](SECURITY.md) for vulnerability reporting
+instructions.
 
 ## Support
 
-Support guidance and repository communication expectations are documented in [SUPPORT.md](SUPPORT.md).
+Support expectations are documented in [SUPPORT.md](SUPPORT.md).
 
 ## License
 

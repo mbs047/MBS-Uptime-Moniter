@@ -7,6 +7,16 @@ This package is meant to be installed inside the app you want to monitor. It
 does not create a public status page by itself. Instead, it exposes structured
 probe data that a status monitor can import or register against.
 
+## Documentation
+
+- [docs/installation.md](docs/installation.md)
+  Installation, configuration, auth, routes, and heartbeat setup.
+- [docs/connecting-to-monitor.md](docs/connecting-to-monitor.md)
+  Pull and push registration flows for connecting the package to a status
+  monitor.
+- [docs/custom-contributors.md](docs/custom-contributors.md)
+  Extending the package with custom probe contributors.
+
 ## What It Does
 
 - registers a health endpoint, default `GET /status/health`
