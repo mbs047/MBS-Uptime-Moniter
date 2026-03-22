@@ -107,7 +107,6 @@
                 @empty
                     <article class="notice-card notice-card--quiet">
                         <div class="notice-card__meta">
-                            <x-status-badge status="operational" />
                             <span>No active incidents or maintenance</span>
                         </div>
                         <p class="section-lede">We’re not aware of any issues affecting the monitored production systems right now.</p>
@@ -139,7 +138,9 @@
                             <div>
                                 <div class="service-panel__title">
                                     <h3>{{ $service['name'] }}</h3>
-                                    <x-status-badge :status="$service['status']" />
+                                    @if ($service['status'] !== 'operational')
+                                        <x-status-badge :status="$service['status']" />
+                                    @endif
                                 </div>
 
                                 @if ($service['description'])
@@ -160,7 +161,9 @@
                                         <div class="component-item__copy">
                                             <div class="component-item__heading">
                                                 <h4 class="component-name">{{ $serviceComponent['display_name'] }}</h4>
-                                                <x-status-badge :status="$serviceComponent['status']" />
+                                                @if ($serviceComponent['status'] !== 'operational')
+                                                    <x-status-badge :status="$serviceComponent['status']" />
+                                                @endif
                                             </div>
 
                                             @if ($serviceComponent['description'])
