@@ -111,4 +111,42 @@ class PublicStatusTest extends TestCase
 
         $this->get("/incidents/{$incident->slug}")->assertNotFound();
     }
+
+    public function test_no_data_bars_do_not_report_a_percentage_from_inconsistent_daily_rows(): void
+    {
+        PlatformSetting::query()->create([
+            'brand_name' => 'Status Center',
+            'uptime_window_days' => 1,
+        ]);
+
+        $service = Service::query()->create([
+            'name' => 'API',
+            'slug' => 'api',
+            'status' => ComponentStatus::Operational,
+            'is_public' => true,
+        ]);
+
+        $component = Component::query()->create([
+            'service_id' => $service->id,
+            'display_name' => 'Cache',
+            'status' => ComponentStatus::Operational,
+            'automated_status' => ComponentStatus::Operational,
+            'is_public' => true,
+        ]);
+
+        ComponentDailyUptime::query()->create([
+            'component_id' => $component->id,
+            'day' => now()->toDateString(),
+            'healthy_slots' => 0,
+            'observed_slots' => 0,
+            'maintenance_slots' => 0,
+            'no_data_slots' => 24,
+            'uptime_percentage' => 100.00,
+        ]);
+
+        $this->getJson('/api/status/services')
+            ->assertOk()
+            ->assertJsonPath('0.components.0.uptime_bars.0.state', 'no_data')
+            ->assertJsonPath('0.components.0.uptime_bars.0.percentage', null);
+    }
 }
