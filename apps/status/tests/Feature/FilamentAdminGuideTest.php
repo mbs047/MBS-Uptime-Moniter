@@ -74,7 +74,7 @@ class FilamentAdminGuideTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('The push registration token is not configured yet.')
+            ->assertSee('Push registration is waiting for a monitor token')
             ->assertSee('Open monitor settings');
     }
 }
