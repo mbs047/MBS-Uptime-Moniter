@@ -11,12 +11,12 @@ use App\Models\Incident;
 use App\Models\IncidentUpdate;
 use App\Models\PlatformSetting;
 use App\Models\Service;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class PublicStatusTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_public_pages_and_api_endpoints_render_status_data(): void
     {

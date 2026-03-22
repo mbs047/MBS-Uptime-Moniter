@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class TestDatabaseIsolationTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_suite_uses_a_dedicated_testing_database(): void
     {

@@ -10,12 +10,12 @@ use App\Models\Component;
 use App\Models\Incident;
 use App\Models\Service;
 use App\Services\Status\StatusRollupService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class StatusRollupServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_partial_outage_is_derived_when_some_checks_still_pass(): void
     {

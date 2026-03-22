@@ -6,12 +6,12 @@ use App\Enums\CheckType;
 use App\Enums\IncidentSeverity;
 use App\Models\PlatformSetting;
 use App\Support\Filament\FormDefaults;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class FormDefaultsTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_platform_settings_defaults_use_product_baseline_and_config_fallbacks(): void
     {

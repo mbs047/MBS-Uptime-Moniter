@@ -6,13 +6,13 @@ use App\Jobs\RunCheckJob;
 use App\Models\Check;
 use App\Models\Component;
 use App\Models\Service;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class StatusDispatchDueChecksTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_due_checks_are_dispatched_and_future_checks_are_skipped(): void
     {

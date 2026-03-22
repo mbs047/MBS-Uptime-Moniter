@@ -21,12 +21,12 @@ use App\Models\PlatformSetting;
 use App\Models\RemoteIntegration;
 use App\Models\Service;
 use App\Models\Subscriber;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\RefreshDedicatedDatabase;
 use Tests\TestCase;
 
 class DataPreservationTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDedicatedDatabase;
 
     public function test_prune_command_preserves_old_check_runs(): void
     {
