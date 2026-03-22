@@ -20,6 +20,7 @@
 
         $windowStart = now()->subDays($uptimeWindowDays - 1);
         $windowLabel = $windowStart->format('M Y').' - '.now()->format('M Y');
+        $showServiceName = count($services) > 1;
     @endphp
 
     <div class="status-page">
@@ -37,10 +38,14 @@
             </div>
 
             <nav class="status-nav" aria-label="Status page">
-                <button type="button" class="status-nav__link status-nav__button" data-open-subscribe-modal>Subscribe to updates</button>
-                <span class="status-nav__stamp" data-relative-time="{{ $summary['generated_at'] }}" data-relative-prefix="Updated">
-                    Updated {{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}
-                </span>
+                <div class="status-nav__controls">
+                    <button type="button" class="status-nav__link status-nav__button" data-open-subscribe-modal>
+                        <span class="status-nav__button-label">Subscribe to updates</span>
+                    </button>
+                    <span class="status-nav__stamp" data-relative-time="{{ $summary['generated_at'] }}" data-relative-prefix="Updated">
+                        Updated {{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}
+                    </span>
+                </div>
             </nav>
         </header>
 
@@ -153,12 +158,21 @@
                     <article class="service-panel">
                         <div class="service-panel__header">
                             <div>
-                                <div class="service-panel__title">
-                                    <h3>{{ $service['name'] }}</h3>
-                                    @if ($service['status'] !== 'operational')
-                                        <x-status-badge :status="$service['status']" />
-                                    @endif
-                                </div>
+                                @if ($showServiceName)
+                                    <div class="service-panel__title">
+                                        <h3>{{ $service['name'] }}</h3>
+                                        @if ($service['status'] !== 'operational')
+                                            <x-status-badge :status="$service['status']" />
+                                        @endif
+                                    </div>
+                                @else
+                                    <div class="service-panel__title service-panel__title--single">
+                                        <span class="service-panel__context">Public components</span>
+                                        @if ($service['status'] !== 'operational')
+                                            <x-status-badge :status="$service['status']" />
+                                        @endif
+                                    </div>
+                                @endif
 
                                 @if ($service['description'])
                                     <p class="section-lede">{{ $service['description'] }}</p>
@@ -206,7 +220,6 @@
 
                                     <div class="component-uptime">
                                         <div class="component-uptime__header">
-                                            <span class="component-uptime__label">Per-component uptime history</span>
                                             <span class="component-uptime__hint">Hover a bar to inspect that day.</span>
                                         </div>
 
