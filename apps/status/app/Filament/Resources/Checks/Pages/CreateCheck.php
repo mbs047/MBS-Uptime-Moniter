@@ -5,10 +5,13 @@ namespace App\Filament\Resources\Checks\Pages;
 use App\Filament\Resources\Checks\CheckResource;
 use App\Services\Checks\CheckConfigValidator;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\Width;
 
 class CreateCheck extends CreateRecord
 {
     protected static string $resource = CheckResource::class;
+
+    protected Width|string|null $maxContentWidth = Width::Full;
 
     protected ?string $subheading = 'Use the wizard to define scope, cadence, connection details, and clear success criteria before saving the check.';
 
