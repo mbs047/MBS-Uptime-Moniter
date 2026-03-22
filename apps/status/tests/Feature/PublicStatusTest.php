@@ -73,7 +73,8 @@ class PublicStatusTest extends TestCase
             ->assertOk()
             ->assertSee('Status Center')
             ->assertSee('API outage')
-            ->assertSee('Public API');
+            ->assertSee('Public API')
+            ->assertSee('95.00% uptime');
 
         $this->get('/incidents/api-outage')
             ->assertOk()

@@ -185,7 +185,7 @@ class RemoteIntegrationResource extends Resource
                 ])
                     ->persistStepInQueryString('integration-step')
                     ->skippable(),
-            ]);
+            ])->columns(1);
     }
 
     public static function infolist(Schema $schema): Schema

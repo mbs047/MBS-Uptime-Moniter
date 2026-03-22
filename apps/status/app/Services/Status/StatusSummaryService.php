@@ -18,15 +18,15 @@ class StatusSummaryService
         $settings = PlatformSetting::current();
         $windowDays = $settings->uptime_window_days ?: 90;
         $services = $this->servicesQuery($windowDays)->get();
-        $incidents = $this->publishedIncidents();
-        $activeIncidents = $this->activeIncidents($incidents);
+        $publishedIncidents = $this->publishedIncidents();
+        $activeIncidents = $this->activeIncidents($publishedIncidents);
 
         return [
             'settings' => $settings,
             'summary' => $this->summaryPayload($services, $activeIncidents, $settings),
-            'services' => $this->serializeServices($services, $windowDays, $activeIncidents),
+            'services' => $this->serializeServices($services, $windowDays, $publishedIncidents, $activeIncidents),
             'activeIncidents' => $this->serializeIncidents($activeIncidents),
-            'incidentHistory' => $this->serializeIncidents($incidents->take(10)),
+            'incidentHistory' => $this->serializeIncidents($publishedIncidents->take(10)),
             'uptimeWindowDays' => $windowDays,
         ];
     }
@@ -60,10 +60,11 @@ class StatusSummaryService
     {
         $settings = PlatformSetting::current();
         $windowDays = $settings->uptime_window_days ?: 90;
-        $incidents = $this->activeIncidents($this->publishedIncidents());
+        $publishedIncidents = $this->publishedIncidents();
+        $activeIncidents = $this->activeIncidents($publishedIncidents);
         $services = $this->servicesQuery($windowDays)->get();
 
-        return $this->serializeServices($services, $windowDays, $incidents);
+        return $this->serializeServices($services, $windowDays, $publishedIncidents, $activeIncidents);
     }
 
     public function incidentsPayload(): array
@@ -112,26 +113,41 @@ class StatusSummaryService
             ->values();
     }
 
-    protected function serializeServices(Collection $services, int $windowDays, Collection $activeIncidents): array
+    protected function serializeServices(Collection $services, int $windowDays, Collection $publishedIncidents, Collection $activeIncidents): array
     {
-        return $services->map(function (Service $service) use ($windowDays, $activeIncidents): array {
+        return $services->map(function (Service $service) use ($windowDays, $publishedIncidents, $activeIncidents): array {
             return [
                 'id' => $service->id,
                 'name' => $service->name,
                 'slug' => $service->slug,
                 'description' => $service->description,
                 'status' => $service->status?->value ?? ComponentStatus::Operational->value,
+                'component_count' => $service->components->count(),
+                'uptime_90d_percent' => $this->serviceUptimePercentage($service),
                 'components' => $service->components->map(fn (Component $component) => [
                     'id' => $component->id,
                     'display_name' => $component->display_name,
                     'description' => $component->description,
                     'status' => $component->status?->value ?? ComponentStatus::Operational->value,
                     'uptime_90d_percent' => $this->componentUptimePercentage($component),
-                    'uptime_bars' => $this->uptimeBars($component, $windowDays),
+                    'uptime_bars' => $this->componentUptimeBars($component, $service, $windowDays, $publishedIncidents),
                     'active_incidents' => $this->componentIncidentRefs($component, $service, $activeIncidents),
                 ])->values()->all(),
             ];
         })->values()->all();
+    }
+
+    protected function serviceUptimePercentage(Service $service): float
+    {
+        $healthy = $service->components
+            ->flatMap(fn (Component $component) => $component->dailyUptimes)
+            ->sum('healthy_slots');
+
+        $observed = $service->components
+            ->flatMap(fn (Component $component) => $component->dailyUptimes)
+            ->sum('observed_slots');
+
+        return $observed > 0 ? round(($healthy / $observed) * 100, 2) : 0;
     }
 
     protected function serializeIncidents(Collection $incidents): array
@@ -162,38 +178,126 @@ class StatusSummaryService
         return $observed > 0 ? round(($healthy / $observed) * 100, 2) : 0;
     }
 
-    protected function uptimeBars(Component $component, int $windowDays): array
+    protected function componentUptimeBars(Component $component, Service $service, int $windowDays, Collection $publishedIncidents): array
     {
         $bars = collect();
         $byDay = $component->dailyUptimes->keyBy(fn ($uptime) => $uptime->day->toDateString());
 
         foreach (range($windowDays - 1, 0) as $offset) {
-            $date = Carbon::today(config('app.timezone'))->subDays($offset)->toDateString();
-            $uptime = $byDay->get($date);
+            $day = Carbon::today(config('app.timezone'))->subDays($offset);
+            $dayKey = $day->toDateString();
+            $uptime = $byDay->get($dayKey);
 
             if (! $uptime) {
-                $bars->push(['day' => $date, 'state' => 'no_data', 'percentage' => null]);
+                $bars->push([
+                    'day' => $dayKey,
+                    'date_label' => $day->format('D, j M Y'),
+                    'state' => 'no_data',
+                    'percentage' => null,
+                    'messages' => [[
+                        'severity' => 'no_data',
+                        'message' => $this->defaultUptimeMessage('no_data'),
+                    ]],
+                ]);
 
                 continue;
             }
 
-            $state = match (true) {
-                $uptime->maintenance_slots > 0 && $uptime->observed_slots === 0 => 'maintenance',
-                $uptime->observed_slots === 0 => 'no_data',
-                $uptime->uptime_percentage >= 99.95 => 'operational',
-                $uptime->uptime_percentage >= 99.0 => 'degraded',
-                $uptime->uptime_percentage >= 95.0 => 'partial_outage',
-                default => 'major_outage',
-            };
+            $state = $this->resolveUptimeState((float) $uptime->uptime_percentage, $uptime->observed_slots, $uptime->maintenance_slots);
+            $messages = $this->componentIncidentMessages(
+                $component,
+                $service,
+                $day->copy()->startOfDay(),
+                $day->copy()->endOfDay(),
+                $publishedIncidents,
+            );
 
             $bars->push([
-                'day' => $date,
+                'day' => $dayKey,
+                'date_label' => $day->format('D, j M Y'),
                 'state' => $state,
                 'percentage' => (float) $uptime->uptime_percentage,
+                'messages' => $messages !== []
+                    ? $messages
+                    : [[
+                        'severity' => $state,
+                        'message' => $this->defaultUptimeMessage($state),
+                    ]],
             ]);
         }
 
         return $bars->all();
+    }
+
+    protected function resolveUptimeState(?float $uptimePercentage, int $observedSlots, int $maintenanceSlots): string
+    {
+        return match (true) {
+            $maintenanceSlots > 0 && $observedSlots === 0 => 'maintenance',
+            $observedSlots === 0 => 'no_data',
+            $uptimePercentage >= 99.95 => 'operational',
+            $uptimePercentage >= 99.0 => 'degraded',
+            $uptimePercentage >= 95.0 => 'partial_outage',
+            default => 'major_outage',
+        };
+    }
+
+    protected function componentIncidentMessages(Component $component, Service $service, Carbon $dayStart, Carbon $dayEnd, Collection $publishedIncidents): array
+    {
+        return $publishedIncidents
+            ->filter(function (Incident $incident) use ($component, $service, $dayStart, $dayEnd): bool {
+                $affectsService = $incident->services->contains('id', $service->id)
+                    || $incident->components->contains('id', $component->id);
+
+                return $affectsService && $this->incidentTouchesDay($incident, $dayStart, $dayEnd);
+            })
+            ->map(function (Incident $incident) use ($dayEnd): array {
+                $message = optional(
+                    $incident->updates
+                        ->filter(fn ($update) => ($update->published_at ?? $update->created_at)?->lte($dayEnd))
+                        ->sortByDesc(fn ($update) => ($update->published_at ?? $update->created_at)?->getTimestamp() ?? 0)
+                        ->first()
+                )->body ?? $incident->summary ?? $incident->title;
+
+                return [
+                    'severity' => $incident->severity->value,
+                    'message' => $message,
+                ];
+            })
+            ->unique('message')
+            ->values()
+            ->all();
+    }
+
+    protected function incidentTouchesDay(Incident $incident, Carbon $dayStart, Carbon $dayEnd): bool
+    {
+        $incidentStart = $incident->starts_at
+            ?? $incident->scheduled_starts_at
+            ?? $incident->published_at
+            ?? $incident->created_at;
+
+        $incidentEnd = $incident->resolved_at ?? $incident->scheduled_ends_at;
+
+        if ($incidentStart && $incidentStart->gt($dayEnd)) {
+            return false;
+        }
+
+        if ($incidentEnd && $incidentEnd->lt($dayStart)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function defaultUptimeMessage(string $state): string
+    {
+        return match ($state) {
+            'operational' => 'All monitored components operated normally on this day.',
+            'maintenance' => 'Only scheduled maintenance was recorded on this day.',
+            'degraded' => 'Automated checks detected degraded performance on this day.',
+            'partial_outage' => 'Automated checks recorded a partial outage on this day.',
+            'major_outage' => 'Automated checks recorded a major outage on this day.',
+            default => 'No uptime data was recorded for this day.',
+        };
     }
 
     protected function componentIncidentRefs(Component $component, Service $service, Collection $activeIncidents): array
