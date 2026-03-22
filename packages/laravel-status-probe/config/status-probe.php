@@ -15,6 +15,8 @@ return [
     'monitor' => [
         'url' => env('STATUS_MONITOR_URL'),
         'token' => env('STATUS_MONITOR_TOKEN'),
+        'verify' => env('STATUS_MONITOR_VERIFY', true),
+        'ca_path' => env('STATUS_MONITOR_CA_PATH'),
         'interval_minutes' => 1,
         'timeout_seconds' => 10,
         'failure_threshold' => 2,

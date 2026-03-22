@@ -30,6 +30,8 @@ STATUS_PROBE_HEALTH_PATH=status/health
 STATUS_PROBE_METADATA_PATH=status/metadata
 STATUS_MONITOR_URL=
 STATUS_MONITOR_TOKEN=
+STATUS_MONITOR_VERIFY=true
+STATUS_MONITOR_CA_PATH=
 ```
 
 ## What Gets Registered
@@ -78,6 +80,8 @@ Main options:
 - `auth.token`
 - `monitor.url`
 - `monitor.token`
+- `monitor.verify`
+- `monitor.ca_path`
 - `monitor.interval_minutes`
 - `monitor.timeout_seconds`
 - `monitor.failure_threshold`
@@ -107,6 +111,27 @@ The metadata payload uses `APP_URL` when building:
 - `metadata_url`
 
 Set `APP_URL` correctly or your monitor may import invalid endpoint URLs.
+
+## Local HTTPS Monitor Connections
+
+If the status monitor is running on a local HTTPS domain such as
+`https://uptime.test`, the registration command may need custom TLS settings.
+
+Available options:
+
+- set `STATUS_MONITOR_VERIFY=false` for local development only
+- set `STATUS_MONITOR_CA_PATH=/path/to/local-ca.pem` when you have a local CA
+  bundle
+- use `php artisan status-probe:register --insecure` for a one-off insecure
+  registration request
+
+Example local setup:
+
+```dotenv
+STATUS_MONITOR_URL=https://uptime.test
+STATUS_MONITOR_TOKEN=your-monitor-token
+STATUS_MONITOR_VERIFY=false
+```
 
 ## Testing The Endpoints
 
