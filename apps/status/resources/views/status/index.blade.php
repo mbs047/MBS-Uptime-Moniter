@@ -219,10 +219,6 @@
                                     </div>
 
                                     <div class="component-uptime">
-                                        <div class="component-uptime__header">
-                                            <span class="component-uptime__hint">Hover a bar to inspect that day.</span>
-                                        </div>
-
                                         <div class="component-uptime__track" aria-label="{{ $serviceComponent['display_name'] }} 90 day uptime history">
                                             @foreach ($serviceComponent['uptime_bars'] as $bar)
                                                 <div class="component-uptime__cell">
