@@ -10,8 +10,6 @@ use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Models\Admin;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
@@ -72,7 +70,10 @@ class AdminResource extends Resource
                                 : 'Enter a new password only when you want to rotate the current one.'),
                         Toggle::make('is_active')
                             ->default(true)
-                            ->helperText('Disable access without deleting the record or losing audit history.'),
+                            ->disabled(fn (?Admin $record): bool => $record?->isCurrentAdmin() ?? false)
+                            ->helperText(fn (?Admin $record): string => $record?->isCurrentAdmin()
+                                ? 'Your current signed-in admin stays active while you are working.'
+                                : 'Disable access without deleting the record or losing audit history.'),
                     ])
                     ->columnSpanFull()
                     ->columns(2),
@@ -136,11 +137,6 @@ class AdminResource extends Resource
                     ->label('Actions')
                     ->icon(Heroicon::OutlinedEllipsisHorizontal)
                     ->button(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 
