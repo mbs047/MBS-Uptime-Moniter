@@ -37,7 +37,7 @@
             </div>
 
             <nav class="status-nav" aria-label="Status page">
-                <a href="#subscribe" class="status-nav__link">Subscribe to updates</a>
+                <button type="button" class="status-nav__link status-nav__button" data-open-subscribe-modal>Subscribe to updates</button>
                 <a href="#history" class="status-nav__link">View history</a>
                 <span class="status-nav__stamp">Updated {{ \Illuminate\Support\Carbon::parse($summary['generated_at'])->diffForHumans() }}</span>
             </nav>
@@ -56,24 +56,6 @@
                     <span>{{ $summary['active_incident_count'] }} active incident{{ $summary['active_incident_count'] === 1 ? '' : 's' }}</span>
                 </div>
             </div>
-
-            <aside class="status-overview__aside" id="subscribe">
-                <span class="status-eyebrow">Subscribe to updates</span>
-                <h2 class="panel-title">Get incident emails</h2>
-                <p class="panel-copy">
-                    Receive email only when a published incident is created, updated, or resolved.
-                </p>
-
-                <form class="form-stack" data-subscriber-form>
-                    <div>
-                        <label class="field-label" for="status-email">Email address</label>
-                        <input id="status-email" name="email" type="email" class="field-input" placeholder="team@example.com" required>
-                    </div>
-
-                    <button type="submit" class="button-primary">Subscribe to updates</button>
-                    <p class="status-subtle" data-subscriber-feedback>We’ll ask you to confirm before anything is sent.</p>
-                </form>
-            </aside>
         </section>
 
         <section class="status-section">
@@ -278,10 +260,73 @@
         </footer>
     </div>
 
+    <div class="status-modal" data-subscribe-modal hidden>
+        <div class="status-modal__backdrop" data-close-subscribe-modal></div>
+
+        <div
+            class="status-modal__dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="subscribe-modal-title"
+            aria-describedby="subscribe-modal-copy"
+        >
+            <button type="button" class="status-modal__close" aria-label="Close subscribe dialog" data-close-subscribe-modal>&times;</button>
+
+            <span class="status-eyebrow">Subscribe to updates</span>
+            <h2 class="panel-title" id="subscribe-modal-title">Get incident emails</h2>
+            <p class="panel-copy" id="subscribe-modal-copy">
+                Receive email only when a published incident is created, updated, or resolved.
+            </p>
+
+            <form class="form-stack" data-subscriber-form>
+                <div>
+                    <label class="field-label" for="status-email">Email address</label>
+                    <input id="status-email" name="email" type="email" class="field-input" placeholder="team@example.com" required>
+                </div>
+
+                <button type="submit" class="button-primary">Subscribe to updates</button>
+                <p class="status-subtle" data-subscriber-feedback>We’ll ask you to confirm before anything is sent.</p>
+            </form>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.querySelector('[data-subscribe-modal]');
+            const openButtons = document.querySelectorAll('[data-open-subscribe-modal]');
+            const closeButtons = document.querySelectorAll('[data-close-subscribe-modal]');
             const form = document.querySelector('[data-subscriber-form]');
             const feedback = document.querySelector('[data-subscriber-feedback]');
+            const emailField = document.querySelector('#status-email');
+
+            const openModal = () => {
+                if (!modal) return;
+
+                modal.hidden = false;
+                document.body.classList.add('status-modal-open');
+                window.requestAnimationFrame(() => emailField?.focus());
+            };
+
+            const closeModal = () => {
+                if (!modal) return;
+
+                modal.hidden = true;
+                document.body.classList.remove('status-modal-open');
+            };
+
+            openButtons.forEach((button) => {
+                button.addEventListener('click', openModal);
+            });
+
+            closeButtons.forEach((button) => {
+                button.addEventListener('click', closeModal);
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && modal && !modal.hidden) {
+                    closeModal();
+                }
+            });
 
             if (!form || !feedback) return;
 
