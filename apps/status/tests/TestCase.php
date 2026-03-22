@@ -35,7 +35,7 @@ abstract class TestCase extends BaseTestCase
         $databasePath = $this->resolveDedicatedTestDatabasePath();
         $primaryDatabasePath = $this->primaryDatabasePath();
 
-        if (realpath($databasePath) === realpath($primaryDatabasePath)) {
+        if ($this->normalizePath($databasePath) === $this->normalizePath($primaryDatabasePath)) {
             throw new RuntimeException('Tests cannot run against database/database.sqlite. A dedicated test database is required.');
         }
 
@@ -122,8 +122,25 @@ abstract class TestCase extends BaseTestCase
             return;
         }
 
-        if (realpath($configuredDatabasePath) === realpath($this->primaryDatabasePath())) {
+        if ($this->normalizePath($configuredDatabasePath) === $this->normalizePath($this->primaryDatabasePath())) {
             throw new RuntimeException('Tests cannot refresh the working application database. PHPUnit must use a dedicated sqlite file under database/testing.');
         }
+    }
+
+    protected function normalizePath(string $path): string
+    {
+        $resolvedPath = realpath($path);
+
+        if ($resolvedPath !== false) {
+            return str_replace('\\', '/', $resolvedPath);
+        }
+
+        $path = str_replace('\\', '/', $path);
+
+        if (! str_starts_with($path, '/')) {
+            $path = base_path($path);
+        }
+
+        return rtrim(preg_replace('#/+#', '/', $path) ?: $path, '/');
     }
 }

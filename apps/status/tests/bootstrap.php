@@ -4,6 +4,22 @@ $basePath = dirname(__DIR__);
 $primaryDatabasePath = $basePath.'/database/database.sqlite';
 $testDatabaseDirectory = getenv('TEST_DATABASE_DIRECTORY') ?: $basePath.'/database/testing';
 
+$normalizePath = static function (string $path): string {
+    $resolvedPath = realpath($path);
+
+    if ($resolvedPath !== false) {
+        return str_replace('\\', '/', $resolvedPath);
+    }
+
+    $path = str_replace('\\', '/', $path);
+
+    if (! str_starts_with($path, '/')) {
+        $path = getcwd().'/'.ltrim($path, '/');
+    }
+
+    return rtrim(preg_replace('#/+#', '/', $path) ?: $path, '/');
+};
+
 if (! str_starts_with($testDatabaseDirectory, '/')) {
     $testDatabaseDirectory = $basePath.'/'.ltrim($testDatabaseDirectory, '/');
 }
@@ -15,7 +31,7 @@ if (! is_dir($testDatabaseDirectory)) {
 $testDatabaseToken = getenv('TEST_TOKEN') ?: getmypid();
 $testDatabasePath = rtrim($testDatabaseDirectory, '/')."/phpunit-{$testDatabaseToken}.sqlite";
 
-if (realpath($testDatabasePath) === realpath($primaryDatabasePath)) {
+if ($normalizePath($testDatabasePath) === $normalizePath($primaryDatabasePath)) {
     throw new RuntimeException('Tests cannot bootstrap against database/database.sqlite. A dedicated test database is required.');
 }
 
