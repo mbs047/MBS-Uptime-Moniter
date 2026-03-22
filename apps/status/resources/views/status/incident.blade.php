@@ -13,7 +13,7 @@
             </div>
 
             <nav class="status-nav" aria-label="Incident page">
-                <a href="{{ route('status.index') }}#history" class="status-nav__link">View history</a>
+                <a href="{{ route('status.history') }}" class="status-nav__link">View history</a>
                 <span class="status-nav__stamp">{{ $incident->status->label() }}</span>
             </nav>
         </header>

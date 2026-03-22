@@ -3,11 +3,13 @@
 use App\Http\Controllers\Auth\AdminInviteController;
 use App\Http\Controllers\Auth\AdminSetupController;
 use App\Http\Controllers\Auth\SubscriberController;
+use App\Http\Controllers\PublicStatus\HistoryPageController;
 use App\Http\Controllers\PublicStatus\IncidentPageController;
 use App\Http\Controllers\PublicStatus\StatusPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', StatusPageController::class)->name('status.index');
+Route::get('/history', HistoryPageController::class)->name('status.history');
 Route::get('/incidents/{incident:slug}', IncidentPageController::class)->name('status.incidents.show');
 
 Route::get('/admin/setup', [AdminSetupController::class, 'show'])->name('admin.setup.show');
