@@ -100,6 +100,7 @@ class CheckResource extends Resource
                                         ->default(true)
                                         ->helperText('Disable a check when you want to keep its configuration without scheduling new runs.'),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                         ]),
                     Step::make('Cadence')
@@ -133,6 +134,7 @@ class CheckResource extends Resource
                                         ->required()
                                         ->helperText('Use a higher recovery threshold only when you want multiple clean runs before clearing an issue.'),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                         ]),
                     Step::make('Connection')
@@ -185,6 +187,7 @@ class CheckResource extends Resource
                                         ->placeholder("{\n  \"ping\": true\n}")
                                         ->columnSpanFull(),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                             Section::make('SSL check')
                                 ->visible(fn (Get $get): bool => $get('type') === CheckType::Ssl->value)
@@ -203,6 +206,7 @@ class CheckResource extends Resource
                                         ->required(fn (Get $get): bool => $get('type') === CheckType::Ssl->value)
                                         ->helperText('The check degrades once the certificate drops below this many days remaining.'),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(3),
                             Section::make('DNS check')
                                 ->visible(fn (Get $get): bool => $get('type') === CheckType::Dns->value)
@@ -226,6 +230,7 @@ class CheckResource extends Resource
                                         ->helperText('Optional. Add one or more expected record values when resolution alone is not enough.')
                                         ->columnSpanFull(),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                             Section::make('TCP check')
                                 ->visible(fn (Get $get): bool => $get('type') === CheckType::Tcp->value)
@@ -238,6 +243,7 @@ class CheckResource extends Resource
                                         ->required(fn (Get $get): bool => $get('type') === CheckType::Tcp->value)
                                         ->helperText('This is usually 443, 80, or another known service port.'),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                         ]),
                     Step::make('Expectations')
@@ -270,6 +276,7 @@ class CheckResource extends Resource
                                         ->helperText('Add JSON assertions when you need to validate more than status codes alone.')
                                         ->columnSpanFull(),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                             Section::make('Operator notes')
                                 ->schema([
@@ -284,6 +291,7 @@ class CheckResource extends Resource
                                         ->placeholder('No error recorded yet')
                                         ->columnSpanFull(),
                                 ])
+                                ->columnSpanFull()
                                 ->visible(fn (?Check $record): bool => $record !== null),
                         ]),
                 ])

@@ -66,6 +66,7 @@ class ServiceResource extends Resource
                             ->columnSpanFull()
                             ->helperText('Optional context shown on public pages and in admin records.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Display controls')
                     ->description('Use these to influence ordering and whether the service is visible on the public status page.')
@@ -80,6 +81,7 @@ class ServiceResource extends Resource
                             ->required()
                             ->helperText('Hidden services stay manageable in admin without appearing on the public status page.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
             ]);
     }

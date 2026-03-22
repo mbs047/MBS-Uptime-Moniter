@@ -52,6 +52,7 @@ class AdminResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->helperText('This is the sign-in address for the admin account.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Access')
                     ->description('Create a password only for direct access. Leave it blank while editing to keep the current password unchanged.')
@@ -69,6 +70,7 @@ class AdminResource extends Resource
                             ->default(true)
                             ->helperText('Disable access without deleting the record or losing audit history.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
             ]);
     }

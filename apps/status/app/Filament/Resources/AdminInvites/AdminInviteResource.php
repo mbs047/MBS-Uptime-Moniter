@@ -52,6 +52,7 @@ class AdminInviteResource extends Resource
                             ->maxLength(255)
                             ->helperText('The invitation email will be sent here.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Access window')
                     ->description('Give the recipient enough time to accept the invite without leaving stale links active forever.')
@@ -60,7 +61,8 @@ class AdminInviteResource extends Resource
                             ->default(now()->addDays(7))
                             ->helperText('Leave this in place for a one-week default, or shorten it for higher-sensitivity access.')
                             ->seconds(false),
-                    ]),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 

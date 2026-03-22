@@ -91,6 +91,7 @@ class RemoteIntegrationResource extends Resource
                                         ->required()
                                         ->helperText('Hybrid is recommended: let the remote app register itself, then allow the monitor to pull fresh metadata later.'),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                         ]),
                     Step::make('Endpoints & auth')
@@ -108,6 +109,7 @@ class RemoteIntegrationResource extends Resource
                                         ->maxLength(255)
                                         ->helperText('Leave this blank to use {base_url}/status/health, or override it for custom package paths.'),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                             Section::make('Authentication')
                                 ->schema([
@@ -122,6 +124,7 @@ class RemoteIntegrationResource extends Resource
                                         ->helperText('Use the remote STATUS_PROBE_TOKEN here. Leave it blank only if the remote metadata and health endpoints are intentionally public.')
                                         ->columnSpanFull(),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                         ]),
                     Step::make('Review')
@@ -153,6 +156,7 @@ class RemoteIntegrationResource extends Resource
                                         ->columnSpanFull()
                                         ->helperText('If sync fails, the previous linked service and checks stay in place until you fix the connection and sync again.'),
                                 ])
+                                ->columnSpanFull()
                                 ->columns(2),
                         ]),
                 ])

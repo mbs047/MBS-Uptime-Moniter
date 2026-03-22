@@ -58,7 +58,7 @@
             style="
                 display: grid;
                 gap: 1.25rem;
-                grid-template-columns: minmax(0, 2fr) minmax(20rem, 1fr);
+                grid-template-columns: minmax(0, 1fr);
             "
         >
             <div style="display: grid; gap: 1.25rem;">
@@ -178,7 +178,7 @@
                     </div>
                 </x-filament::section>
 
-                <div style="display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));">
+                <div style="display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr);">
                     <x-filament::section
                         heading="Pull sync from this monitor"
                         description="Best for operator-led setup when this monitor can reach the remote app directly."

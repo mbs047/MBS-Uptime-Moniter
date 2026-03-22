@@ -77,6 +77,7 @@ class IncidentResource extends Resource
                             ->columnSpanFull()
                             ->helperText('Use a clear operational summary that explains what users are experiencing right now.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Affected scope')
                     ->description('Target services for broad incidents or specific components when the issue is limited to one part of a service.')
@@ -94,6 +95,7 @@ class IncidentResource extends Resource
                             ->searchable()
                             ->helperText('Use component-level targeting when you want narrower impact without escalating the whole service.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Timing and publishing')
                     ->description('Use the actual start time for impact, scheduled windows for maintenance, and published or resolved timestamps to control the public timeline.')
@@ -109,6 +111,7 @@ class IncidentResource extends Resource
                         DateTimePicker::make('resolved_at')
                             ->helperText('Set this when the issue is fully resolved and public updates should stop.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Timeline updates')
                     ->description('Add timeline posts in the same order you want operators and subscribers to read them.')
@@ -130,7 +133,8 @@ class IncidentResource extends Resource
                                     ->helperText('Leave blank until the update is ready to be visible externally.'),
                             ])
                             ->columnSpanFull(),
-                    ]),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 

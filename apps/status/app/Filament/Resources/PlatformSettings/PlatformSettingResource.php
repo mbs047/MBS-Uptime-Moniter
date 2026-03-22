@@ -56,6 +56,7 @@ class PlatformSettingResource extends Resource
                             ->maxLength(255)
                             ->helperText('Public-facing support contact for status or incident questions.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Mail delivery')
                     ->description('These values are used when the monitor sends incident emails to subscribers or administrators.')
@@ -68,6 +69,7 @@ class PlatformSettingResource extends Resource
                             ->maxLength(255)
                             ->helperText('Sender email address used for all outgoing status notifications.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Monitoring defaults')
                     ->description('New checks start from these defaults unless an operator overrides them on the form.')
@@ -93,6 +95,7 @@ class PlatformSettingResource extends Resource
                             ->minValue(1)
                             ->helperText('New checks inherit this many consecutive passing runs before automated health recovers.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
                 Section::make('Probe registration security')
                     ->description('Package-enabled Laravel apps use this monitor-side bearer token when they push registration payloads into the private integration API.')
@@ -112,7 +115,8 @@ class PlatformSettingResource extends Resource
                                 isInline: true,
                             )
                             ->columnSpanFull(),
-                    ]),
+                    ])
+                    ->columnSpanFull(),
                 Section::make('SEO and preview text')
                     ->description('Used for browser tabs, search previews, and link embeds for the public status page.')
                     ->schema([
@@ -124,6 +128,7 @@ class PlatformSettingResource extends Resource
                             ->columnSpanFull()
                             ->helperText('Short summary of what the status page covers and who it serves.'),
                     ])
+                    ->columnSpanFull()
                     ->columns(2),
             ]);
     }
