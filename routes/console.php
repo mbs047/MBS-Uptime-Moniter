@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Console\Commands\StatusDispatchDueChecksCommand;
+use App\Console\Commands\StatusPruneCheckRunsCommand;
+use App\Console\Commands\StatusRefreshDailyUptimeCommand;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Schedule::command(StatusDispatchDueChecksCommand::class)->everyMinute();
+Schedule::command(StatusRefreshDailyUptimeCommand::class, ['--days' => 2])->dailyAt('00:05');
+Schedule::command(StatusPruneCheckRunsCommand::class)->dailyAt('00:15');
