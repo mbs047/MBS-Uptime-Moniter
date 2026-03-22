@@ -562,7 +562,7 @@ a {
     flex-wrap: nowrap;
     gap: 0.14rem;
     align-items: stretch;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .component-uptime__cell {
