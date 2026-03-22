@@ -7,6 +7,8 @@
 
 MBS Uptime Monitor is a self-hosted uptime monitoring and status page application built with Laravel, Filament, and Livewire. It gives teams a branded public status page, operational APIs, incident publishing tools, subscriber notifications, and automated service health rollups in one codebase.
 
+This repository is organized as a workspace. The Laravel application now lives in `apps/status`, while the repo root is reserved for shared docs, API contracts, automation, and future top-level folders.
+
 ## Highlights
 
 - Public status page with service, component, incident, and uptime history views
@@ -27,29 +29,39 @@ MBS Uptime Monitor is a self-hosted uptime monitoring and status page applicatio
 - Tailwind CSS 4
 - PHPUnit 12
 
+## Workspace Layout
+
+```text
+.
+├── api/status/          # Endpoint contracts, specs, and examples
+├── apps/status/         # Laravel application
+├── documents/           # Long-form repository documentation
+├── README.md            # Repository entrypoint
+└── .github/             # CI, templates, and repo automation
+```
+
 ## Quick Start
 
 ```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-[ -f database/database.sqlite ] || touch database/database.sqlite
-php artisan migrate --seed
-npm install
-composer run dev
+make status-install
+cp apps/status/.env.example apps/status/.env
+[ -f apps/status/database/database.sqlite ] || touch apps/status/database/database.sqlite
+make status-artisan CMD="key:generate"
+make status-artisan CMD="migrate --seed"
+make status-dev
 ```
 
 In a second terminal, run the scheduler so due checks and uptime maintenance jobs continue to execute locally:
 
 ```bash
-php artisan schedule:work
+make status-artisan CMD="schedule:work"
 ```
 
 ## First Admin Setup
 
 The initial admin bootstrap is protected by `APP_SETUP_TOKEN`.
 
-1. Set a strong `APP_SETUP_TOKEN` value in `.env`.
+1. Set a strong `APP_SETUP_TOKEN` value in `apps/status/.env`.
 2. Start the app locally or deploy it.
 3. Visit `/admin/setup?token=YOUR_TOKEN`.
 4. Submit the bootstrap form to generate the first admin invite.
@@ -73,22 +85,41 @@ Once the first admin account exists, the bootstrap route is no longer available.
 - `GET /api/status/incidents`
 - `POST /api/status/subscribers`
 
+## Root Commands
+
+Use the root `Makefile` to work with the nested Laravel app without leaving the repository root:
+
+- `make status-install`
+- `make status-dev`
+- `make status-test`
+- `make status-build`
+- `make status-pint`
+- `make status-artisan CMD="migrate --seed"`
+
 ## Local Development
 
-The repository includes a convenience script that starts the Laravel app, queue worker, log tailing, and Vite dev server together:
+All application runtime files live under `apps/status`, including:
+
+- `apps/status/.env`
+- `apps/status/database/database.sqlite`
+- `apps/status/public`
+- `apps/status/routes/api.php`
+
+The repository includes a root wrapper that starts the Laravel app, queue worker, log tailing, and Vite dev server together:
 
 ```bash
-composer run dev
+make status-dev
 ```
 
 Useful additional commands:
 
 ```bash
-php artisan test
-./vendor/bin/pint --test
-php artisan status:dispatch-due-checks
-php artisan status:refresh-daily-uptime --days=2
-php artisan status:prune-check-runs
+make status-pint
+make status-test
+make status-build
+make status-artisan CMD="status:dispatch-due-checks"
+make status-artisan CMD="status:refresh-daily-uptime --days=2"
+make status-artisan CMD="status:prune-check-runs"
 ```
 
 ## Testing and Quality
@@ -96,12 +127,20 @@ php artisan status:prune-check-runs
 Before opening a pull request, run:
 
 ```bash
-./vendor/bin/pint --test
-php artisan test
-npm run build
+make status-pint
+make status-test
+make status-build
 ```
 
 The repository also includes GitHub Actions CI and Dependabot configuration for ongoing maintenance.
+
+## API Docs
+
+Repository-level API docs and examples live in `api/status/`.
+
+## Deployment
+
+If your deployment previously assumed the Laravel app lived at the repo root, update it to use `apps/status/public` as the web root.
 
 ## Contributing
 

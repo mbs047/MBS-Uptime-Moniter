@@ -11,24 +11,23 @@ Thanks for your interest in improving MBS Uptime Monitor.
 ## Local Setup
 
 ```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-[ -f database/database.sqlite ] || touch database/database.sqlite
-php artisan migrate --seed
-npm install
-composer run dev
+make status-install
+cp apps/status/.env.example apps/status/.env
+[ -f apps/status/database/database.sqlite ] || touch apps/status/database/database.sqlite
+make status-artisan CMD="key:generate"
+make status-artisan CMD="migrate --seed"
+make status-dev
 ```
 
 Run the scheduler in a separate terminal when working on monitoring and uptime aggregation features:
 
 ```bash
-php artisan schedule:work
+make status-artisan CMD="schedule:work"
 ```
 
 ## Development Expectations
 
-- Follow the existing Laravel and Filament project structure.
+- Follow the existing Laravel and Filament project structure inside `apps/status`.
 - Add or update tests for behavior changes when practical.
 - Keep code style consistent with Laravel conventions and `pint`.
 - Update documentation when setup steps, API behavior, or product capabilities change.
@@ -39,9 +38,9 @@ php artisan schedule:work
 Run these before submitting a pull request:
 
 ```bash
-./vendor/bin/pint --test
-php artisan test
-npm run build
+make status-pint
+make status-test
+make status-build
 ```
 
 ## Pull Request Checklist

@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "composer"
-    directory: "/"
+    directory: "/apps/status"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
@@ -9,7 +9,7 @@ updates:
       prefix: "deps"
 
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/apps/status"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
