@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class StatusRollupService
 {
-    public function recalculateComponent(Component | int $component): ComponentStatus
+    public function recalculateComponent(Component|int $component): ComponentStatus
     {
         $component = $component instanceof Component
             ? $component->loadMissing('checks', 'service')
@@ -48,7 +48,7 @@ class StatusRollupService
         return $finalStatus;
     }
 
-    public function recalculateService(Service | int $service): ComponentStatus
+    public function recalculateService(Service|int $service): ComponentStatus
     {
         $service = $service instanceof Service
             ? $service->loadMissing('components')

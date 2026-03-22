@@ -4,9 +4,9 @@ namespace App\Filament\Resources\AdminInvites\Pages;
 
 use App\Filament\Resources\AdminInvites\AdminInviteResource;
 use App\Mail\AdminInviteMail;
+use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Filament\Resources\Pages\CreateRecord;
 
 class CreateAdminInvite extends CreateRecord
 {

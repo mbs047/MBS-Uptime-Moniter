@@ -19,10 +19,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(CheckDriverRegistry::class, function () {
             return new CheckDriverRegistry([
-                new HttpCheckDriver(),
-                new SslCheckDriver(),
-                new DnsCheckDriver(),
-                new TcpCheckDriver(),
+                new HttpCheckDriver,
+                new SslCheckDriver,
+                new DnsCheckDriver,
+                new TcpCheckDriver,
             ]);
         });
 

@@ -15,7 +15,7 @@ class CheckConfigValidator
      * @param  array<string, mixed>  $secretConfig
      * @return array<string, mixed>
      */
-    public function validate(CheckType | string $type, array $config, array $secretConfig = []): array
+    public function validate(CheckType|string $type, array $config, array $secretConfig = []): array
     {
         return $this->registry->for($type)->validate($config, $secretConfig);
     }

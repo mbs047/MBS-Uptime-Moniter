@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Components;
 
+use App\Enums\ComponentStatus;
 use App\Filament\Resources\Components\Pages\CreateComponent;
 use App\Filament\Resources\Components\Pages\EditComponent;
 use App\Filament\Resources\Components\Pages\ListComponents;
 use App\Filament\Resources\Components\Pages\ViewComponent;
-use App\Enums\ComponentStatus;
 use App\Models\Component;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;

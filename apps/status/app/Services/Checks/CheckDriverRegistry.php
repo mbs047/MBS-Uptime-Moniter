@@ -15,7 +15,7 @@ class CheckDriverRegistry
         private readonly array $drivers,
     ) {}
 
-    public function for(CheckType | string $type): CheckDriver
+    public function for(CheckType|string $type): CheckDriver
     {
         $value = $type instanceof CheckType ? $type->value : $type;
 
