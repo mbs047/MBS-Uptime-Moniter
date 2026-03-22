@@ -16,6 +16,7 @@ class ViewCheck extends ViewRecord
     {
         return [
             ActionGroup::make([
+                CheckResource::makeViewRunsAction(),
                 CheckResource::makeRunNowAction(),
                 EditAction::make(),
             ])

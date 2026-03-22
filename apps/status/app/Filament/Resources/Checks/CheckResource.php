@@ -8,6 +8,7 @@ use App\Filament\Resources\Checks\Pages\CreateCheck;
 use App\Filament\Resources\Checks\Pages\EditCheck;
 use App\Filament\Resources\Checks\Pages\ListChecks;
 use App\Filament\Resources\Checks\Pages\ViewCheck;
+use App\Filament\Resources\Checks\Pages\ViewCheckRuns;
 use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Jobs\RunCheckJob;
 use App\Models\Check;
@@ -358,6 +359,7 @@ class CheckResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     static::makeRunNowAction(),
+                    static::makeViewRunsAction(),
                     ViewAction::make(),
                     EditAction::make(),
                 ])
@@ -385,6 +387,7 @@ class CheckResource extends Resource
             'index' => ListChecks::route('/'),
             'create' => CreateCheck::route('/create'),
             'view' => ViewCheck::route('/{record}'),
+            'runs' => ViewCheckRuns::route('/{record}/runs'),
             'edit' => EditCheck::route('/{record}/edit'),
         ];
     }
@@ -429,5 +432,14 @@ class CheckResource extends Resource
                     ->success()
                     ->send();
             });
+    }
+
+    public static function makeViewRunsAction(): Action
+    {
+        return Action::make('view_runs')
+            ->label('Runs')
+            ->icon(Heroicon::OutlinedListBullet)
+            ->color('gray')
+            ->url(fn (Check $record): string => static::getUrl('runs', ['record' => $record]));
     }
 }
