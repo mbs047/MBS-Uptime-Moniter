@@ -25,6 +25,7 @@ class RemoteIntegrationFactory extends Factory
             'sync_mode' => RemoteIntegrationSyncMode::Hybrid,
             'auth_mode' => RemoteIntegrationAuthMode::Bearer,
             'auth_secret' => 'probe-token',
+            'tls_verify' => true,
         ];
     }
 }

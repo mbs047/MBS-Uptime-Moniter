@@ -10,6 +10,7 @@ use App\Models\RemoteIntegration;
 use App\Models\Service;
 use App\Services\RemoteIntegrations\PushProbeRegistrationHandler;
 use App\Services\RemoteIntegrations\RemoteIntegrationSyncService;
+use App\Support\Http\RemoteIntegrationTlsOptions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -113,6 +114,32 @@ class RemoteIntegrationSyncTest extends TestCase
         $this->assertSame('Billing API', $integration->name);
         $this->assertSame(RemoteIntegrationSyncStatus::Failed, $integration->last_sync_status);
         $this->assertNotNull($integration->last_sync_error);
+    }
+
+    public function test_remote_integrations_can_disable_tls_verification_for_local_https_targets(): void
+    {
+        $integration = RemoteIntegration::factory()->make([
+            'tls_verify' => false,
+            'tls_ca_path' => null,
+        ]);
+
+        $this->assertSame(
+            ['verify' => false],
+            RemoteIntegrationTlsOptions::for($integration),
+        );
+    }
+
+    public function test_remote_integrations_can_use_a_custom_ca_bundle_path(): void
+    {
+        $integration = RemoteIntegration::factory()->make([
+            'tls_verify' => true,
+            'tls_ca_path' => '/tmp/local-ca.pem',
+        ]);
+
+        $this->assertSame(
+            ['verify' => '/tmp/local-ca.pem'],
+            RemoteIntegrationTlsOptions::for($integration),
+        );
     }
 
     /**
