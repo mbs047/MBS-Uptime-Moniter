@@ -57,6 +57,8 @@ STATUS_PROBE_HEALTH_PATH=status/health
 STATUS_PROBE_METADATA_PATH=status/metadata
 STATUS_MONITOR_URL=
 STATUS_MONITOR_TOKEN=
+STATUS_MONITOR_VERIFY=true
+STATUS_MONITOR_CA_PATH=
 ```
 
 Important notes:
@@ -65,6 +67,10 @@ Important notes:
 - `APP_URL` should be set correctly so the metadata payload contains valid URLs
 - `STATUS_MONITOR_URL` and `STATUS_MONITOR_TOKEN` are only needed if you want
   the monitored app to push its registration into a remote monitor
+- `STATUS_MONITOR_VERIFY` controls TLS certificate verification when the
+  package calls the monitor over HTTPS
+- `STATUS_MONITOR_CA_PATH` lets you point to a local CA bundle when the
+  monitor uses a private or self-signed certificate chain
 
 Once installed, your app will expose:
 
@@ -183,6 +189,35 @@ That command posts the metadata payload to:
 ```text
 POST {STATUS_MONITOR_URL}/api/integrations/probes/register
 ```
+
+### Local HTTPS Development
+
+If your monitor runs on a local HTTPS domain such as `https://uptime.test`
+with a self-signed or private CA certificate, registration may fail during the
+TLS handshake.
+
+You have three safe options:
+
+1. trust the local CA and point the package to it
+2. disable monitor certificate verification in local development only
+3. use the one-off insecure flag just for the registration command
+
+Examples:
+
+```dotenv
+STATUS_MONITOR_VERIFY=false
+```
+
+```dotenv
+STATUS_MONITOR_CA_PATH=/path/to/local-ca.pem
+```
+
+```bash
+php artisan status-probe:register --insecure
+```
+
+Use `--insecure` only for local development. Prefer `STATUS_MONITOR_CA_PATH`
+when you have a local CA bundle available.
 
 ## Built-In Contributors
 

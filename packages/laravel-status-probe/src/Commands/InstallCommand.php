@@ -28,12 +28,15 @@ class InstallCommand extends Command
         $this->ensureEnvironmentValue($files, 'STATUS_PROBE_METADATA_PATH', 'status/metadata');
         $this->ensureEnvironmentValue($files, 'STATUS_MONITOR_URL', '');
         $this->ensureEnvironmentValue($files, 'STATUS_MONITOR_TOKEN', '');
+        $this->ensureEnvironmentValue($files, 'STATUS_MONITOR_VERIFY', 'true');
+        $this->ensureEnvironmentValue($files, 'STATUS_MONITOR_CA_PATH', '');
 
         $this->newLine();
         $this->line('Next steps:');
         $this->line('1. Set STATUS_MONITOR_URL and STATUS_MONITOR_TOKEN in your .env file.');
-        $this->line('2. Run php artisan status-probe:register to push this app into the monitor.');
-        $this->line('3. If scheduler monitoring is enabled, add php artisan status-probe:heartbeat scheduler to the scheduler.');
+        $this->line('2. If the monitor uses a local or self-signed HTTPS certificate, set STATUS_MONITOR_VERIFY=false or STATUS_MONITOR_CA_PATH=/path/to/local-ca.pem.');
+        $this->line('3. Run php artisan status-probe:register to push this app into the monitor.');
+        $this->line('4. If scheduler monitoring is enabled, add php artisan status-probe:heartbeat scheduler to the scheduler.');
 
         return self::SUCCESS;
     }

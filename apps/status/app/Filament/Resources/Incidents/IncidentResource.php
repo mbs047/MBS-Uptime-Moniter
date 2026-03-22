@@ -4,11 +4,14 @@ namespace App\Filament\Resources\Incidents;
 
 use App\Enums\IncidentSeverity;
 use App\Enums\IncidentStatus;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\Incidents\Pages\CreateIncident;
 use App\Filament\Resources\Incidents\Pages\EditIncident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
 use App\Filament\Resources\Incidents\Pages\ViewIncident;
 use App\Models\Incident;
+use App\Support\Filament\FormActions;
+use App\Support\Filament\FormDefaults;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -21,13 +24,19 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class IncidentResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Incident::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
@@ -40,45 +49,98 @@ class IncidentResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
-                Select::make('status')
-                    ->options(collect(IncidentStatus::cases())->mapWithKeys(fn (IncidentStatus $status) => [$status->value => $status->label()])->all())
-                    ->default(IncidentStatus::Draft->value)
-                    ->required(),
-                Select::make('severity')
-                    ->options(collect(IncidentSeverity::cases())->mapWithKeys(fn (IncidentSeverity $severity) => [$severity->value => $severity->label()])->all())
-                    ->required(),
-                Textarea::make('summary')
-                    ->rows(4)
-                    ->columnSpanFull(),
-                Select::make('services')
-                    ->relationship('services', 'name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable(),
-                Select::make('components')
-                    ->relationship('components', 'display_name')
-                    ->multiple()
-                    ->preload()
-                    ->searchable(),
-                DateTimePicker::make('starts_at'),
-                DateTimePicker::make('scheduled_starts_at'),
-                DateTimePicker::make('scheduled_ends_at'),
-                DateTimePicker::make('published_at'),
-                DateTimePicker::make('resolved_at'),
-                Repeater::make('updates')
-                    ->relationship()
+                Section::make('Incident summary')
+                    ->description('Incidents are manual operator events. They control public messaging, maintenance windows, and subscriber notifications.')
                     ->schema([
-                        TextInput::make('title')->maxLength(255),
-                        Textarea::make('body')->required()->rows(3),
+                        TextInput::make('title')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->helperText('Write the plain-language issue title you want the public timeline to display.')
+                            ->afterStateUpdated(function (?string $state, Get $get, Set $set): void {
+                                if (blank($state) || filled($get('slug'))) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug($state));
+                            }),
+                        TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Used in the public incident URL. Keep it short and stable. Use the sparkles action to generate it from the incident title.')
+                            ->suffixAction(FormActions::makeGenerateSlugAction('title'), isInline: true),
                         Select::make('status')
-                            ->options(collect(IncidentStatus::cases())->mapWithKeys(fn (IncidentStatus $status) => [$status->value => $status->label()])->all()),
-                        DateTimePicker::make('published_at'),
+                            ->options(static::getStatusOptions())
+                            ->default(IncidentStatus::Draft->value)
+                            ->required()
+                            ->helperText('Draft stays internal. Published is visible to subscribers and the public site. Resolved closes the incident timeline.'),
+                        Select::make('severity')
+                            ->options(static::getSeverityOptions())
+                            ->default(FormDefaults::incidentSeverity())
+                            ->required()
+                            ->helperText('This severity overrides automated health for the affected services and components while the incident is active. New incidents start at degraded so operators can escalate intentionally when needed.'),
+                        Textarea::make('summary')
+                            ->rows(4)
+                            ->columnSpanFull()
+                            ->helperText('Use a clear operational summary that explains what users are experiencing right now.'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
+                Section::make('Affected scope')
+                    ->description('Target services for broad incidents or specific components when the issue is limited to one part of a service.')
+                    ->schema([
+                        Select::make('services')
+                            ->relationship('services', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Service-level incidents cascade to every public component inside that service.'),
+                        Select::make('components')
+                            ->relationship('components', 'display_name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Use component-level targeting when you want narrower impact without escalating the whole service.'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
+                Section::make('Timing and publishing')
+                    ->description('Use the actual start time for impact, scheduled windows for maintenance, and published or resolved timestamps to control the public timeline.')
+                    ->schema([
+                        DateTimePicker::make('starts_at')
+                            ->default(fn () => now())
+                            ->helperText('When the customer-facing impact or maintenance actually began. New incidents start at the current time to speed up incident creation.'),
+                        DateTimePicker::make('scheduled_starts_at')
+                            ->helperText('Optional. Planned maintenance window start.'),
+                        DateTimePicker::make('scheduled_ends_at')
+                            ->helperText('Optional. Planned maintenance window end.'),
+                        DateTimePicker::make('published_at')
+                            ->helperText('Set automatically on publish if your workflow handles it, or enter it manually when recreating past incidents.'),
+                        DateTimePicker::make('resolved_at')
+                            ->helperText('Set this when the issue is fully resolved and public updates should stop.'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
+                Section::make('Timeline updates')
+                    ->description('Add timeline posts in the same order you want operators and subscribers to read them.')
+                    ->schema([
+                        Repeater::make('updates')
+                            ->relationship()
+                            ->schema([
+                                TextInput::make('title')
+                                    ->maxLength(255)
+                                    ->helperText('Optional short label for the update, such as Investigating or Monitoring.'),
+                                Textarea::make('body')
+                                    ->required()
+                                    ->rows(3)
+                                    ->helperText('This is the main update body shown on the incident detail page and in notifications.'),
+                                Select::make('status')
+                                    ->options(static::getStatusOptions())
+                                    ->helperText('Use published updates for live incident posts and resolved when closing out the timeline.'),
+                                DateTimePicker::make('published_at')
+                                    ->helperText('Leave blank until the update is ready to be visible externally.'),
+                            ])
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
             ]);
@@ -88,13 +150,22 @@ class IncidentResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('title'),
-                TextEntry::make('status')
-                    ->badge(),
-                TextEntry::make('severity')
-                    ->badge(),
-                TextEntry::make('summary')
-                    ->columnSpanFull(),
+                Section::make('Incident summary')
+                    ->description('Review the public incident state, severity, and summary before updating the timeline or publishing changes.')
+                    ->schema([
+                        TextEntry::make('title'),
+                        TextEntry::make('status')
+                            ->badge()
+                            ->formatStateUsing(fn (?IncidentStatus $state): ?string => $state?->label()),
+                        TextEntry::make('severity')
+                            ->badge()
+                            ->formatStateUsing(fn (?IncidentSeverity $state): ?string => $state?->label()),
+                        TextEntry::make('summary')
+                            ->columnSpanFull()
+                            ->placeholder('No summary provided'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 
@@ -106,13 +177,17 @@ class IncidentResource extends Resource
                 TextColumn::make('title')
                     ->searchable(),
                 TextColumn::make('status')
-                    ->badge(),
+                    ->badge()
+                    ->formatStateUsing(fn (?IncidentStatus $state): ?string => $state?->label()),
                 TextColumn::make('severity')
-                    ->badge(),
+                    ->badge()
+                    ->formatStateUsing(fn (?IncidentSeverity $state): ?string => $state?->label()),
                 TextColumn::make('published_at')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->placeholder('Not published'),
                 TextColumn::make('resolved_at')
-                    ->since(),
+                    ->since()
+                    ->placeholder('Still active'),
             ])
             ->filters([
                 //
@@ -143,5 +218,25 @@ class IncidentResource extends Resource
             'view' => ViewIncident::route('/{record}'),
             'edit' => EditIncident::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function getStatusOptions(): array
+    {
+        return collect(IncidentStatus::cases())
+            ->mapWithKeys(fn (IncidentStatus $status) => [$status->value => $status->label()])
+            ->all();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected static function getSeverityOptions(): array
+    {
+        return collect(IncidentSeverity::cases())
+            ->mapWithKeys(fn (IncidentSeverity $severity) => [$severity->value => $severity->label()])
+            ->all();
     }
 }

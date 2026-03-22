@@ -4,20 +4,30 @@ namespace App\Filament\Resources\RemoteIntegrations\Pages;
 
 use App\Filament\Resources\RemoteIntegrations\RemoteIntegrationResource;
 use App\Services\RemoteIntegrations\RemoteIntegrationSyncService;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 
 class EditRemoteIntegration extends EditRecord
 {
     protected static string $resource = RemoteIntegrationResource::class;
 
+    protected ?string $subheading = 'Update connection details here when the remote app changes base URLs, package paths, or authentication secrets.';
+
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            ActionGroup::make([
+                ViewAction::make(),
+                RemoteIntegrationResource::makeSyncNowAction(),
+                DeleteAction::make(),
+            ])
+                ->label('Actions')
+                ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                ->button(),
         ];
     }
 
@@ -60,6 +70,7 @@ class EditRemoteIntegration extends EditRecord
 
             Notification::make()
                 ->title('Remote integration saved and synced.')
+                ->body('The linked service, components, and package-managed checks were refreshed from the remote metadata payload.')
                 ->success()
                 ->send();
         } catch (\Throwable $exception) {

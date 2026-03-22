@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class Admin extends Authenticatable implements CanResetPasswordContract, FilamentUser
 {
@@ -39,6 +41,41 @@ class Admin extends Authenticatable implements CanResetPasswordContract, Filamen
         'remember_token',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (self $admin): void {
+            if (! $admin->exists || ! $admin->isDirty('is_active') || $admin->is_active) {
+                return;
+            }
+
+            if ($admin->isCurrentAdmin()) {
+                throw ValidationException::withMessages([
+                    'is_active' => 'You cannot disable the admin account that is currently signed in.',
+                ]);
+            }
+
+            if ($admin->isLastActiveAdmin()) {
+                throw ValidationException::withMessages([
+                    'is_active' => 'At least one active admin account must remain available.',
+                ]);
+            }
+        });
+
+        static::deleting(function (self $admin): void {
+            if ($admin->isCurrentAdmin()) {
+                throw ValidationException::withMessages([
+                    'admin' => 'You cannot delete the admin account that is currently signed in.',
+                ]);
+            }
+
+            if ($admin->isLastActiveAdmin()) {
+                throw ValidationException::withMessages([
+                    'admin' => 'At least one active admin account must remain available.',
+                ]);
+            }
+        });
+    }
+
     /**
      * @return array<string, string>
      */
@@ -65,5 +102,22 @@ class Admin extends Authenticatable implements CanResetPasswordContract, Filamen
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_active;
+    }
+
+    public function isCurrentAdmin(): bool
+    {
+        return filled($this->getKey()) && Auth::guard('admin')->id() === $this->getKey();
+    }
+
+    public function isLastActiveAdmin(): bool
+    {
+        if (! $this->is_active) {
+            return false;
+        }
+
+        return static::query()
+            ->whereKeyNot($this->getKey())
+            ->where('is_active', true)
+            ->doesntExist();
     }
 }

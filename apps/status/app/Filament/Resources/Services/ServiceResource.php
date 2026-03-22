@@ -3,11 +3,13 @@
 namespace App\Filament\Resources\Services;
 
 use App\Enums\ComponentStatus;
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Resources\Services\Pages\EditService;
 use App\Filament\Resources\Services\Pages\ListServices;
 use App\Filament\Resources\Services\Pages\ViewService;
 use App\Models\Service;
+use App\Support\Filament\FormActions;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -18,14 +20,20 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class ServiceResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Service::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedServerStack;
@@ -38,23 +46,48 @@ class ServiceResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->live(onBlur: true),
-                TextInput::make('slug')
-                    ->required()
-                    ->maxLength(255),
-                Textarea::make('description')
-                    ->rows(3)
-                    ->columnSpanFull(),
-                TextInput::make('sort_order')
-                    ->numeric()
-                    ->default(0)
-                    ->required(),
-                Toggle::make('is_public')
-                    ->default(true)
-                    ->required(),
+                Section::make('Public service details')
+                    ->description('Services are the top-level public groupings that visitors see on the status page, such as API, Auth, or Billing.')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->helperText('Use the short public name you want shown on the status page.')
+                            ->afterStateUpdated(function (?string $state, Get $get, Set $set): void {
+                                if (blank($state) || filled($get('slug'))) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug($state));
+                            }),
+                        TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Used in stable internal references and should usually mirror the public service name. Use the sparkles action to generate it from the service name.')
+                            ->suffixAction(FormActions::makeGenerateSlugAction('name'), isInline: true),
+                        Textarea::make('description')
+                            ->rows(3)
+                            ->columnSpanFull()
+                            ->helperText('Optional context shown on public pages and in admin records.'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
+                Section::make('Display controls')
+                    ->description('Use these to influence ordering and whether the service is visible on the public status page.')
+                    ->schema([
+                        TextInput::make('sort_order')
+                            ->numeric()
+                            ->default(0)
+                            ->required()
+                            ->helperText('Lower values appear first. Leave at 0 if order does not matter yet.'),
+                        Toggle::make('is_public')
+                            ->default(true)
+                            ->required()
+                            ->helperText('Hidden services stay manageable in admin without appearing on the public status page.'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 
@@ -62,12 +95,20 @@ class ServiceResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
-                TextEntry::make('slug'),
-                TextEntry::make('status')
-                    ->badge(),
-                TextEntry::make('description')
-                    ->columnSpanFull(),
+                Section::make('Service summary')
+                    ->description('Review the public service identity, current status, and description in one contained summary.')
+                    ->schema([
+                        TextEntry::make('name'),
+                        TextEntry::make('slug'),
+                        TextEntry::make('status')
+                            ->badge()
+                            ->formatStateUsing(fn (?ComponentStatus $state): ?string => $state?->label()),
+                        TextEntry::make('description')
+                            ->columnSpanFull()
+                            ->placeholder('No description provided'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 
@@ -80,7 +121,7 @@ class ServiceResource extends Resource
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (?ComponentStatus $state) => $state?->label()),
+                    ->formatStateUsing(fn (?ComponentStatus $state): ?string => $state?->label()),
                 TextColumn::make('sort_order')
                     ->numeric(),
                 IconColumn::make('is_public')

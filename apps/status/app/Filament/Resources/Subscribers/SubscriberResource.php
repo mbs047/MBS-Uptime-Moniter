@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Subscribers;
 
+use App\Filament\Resources\Concerns\PreventsDeletion;
 use App\Filament\Resources\Subscribers\Pages\CreateSubscriber;
 use App\Filament\Resources\Subscribers\Pages\EditSubscriber;
 use App\Filament\Resources\Subscribers\Pages\ListSubscribers;
@@ -16,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -24,6 +26,8 @@ use Filament\Tables\Table;
 
 class SubscriberResource extends Resource
 {
+    use PreventsDeletion;
+
     protected static ?string $model = Subscriber::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
@@ -36,10 +40,16 @@ class SubscriberResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('email')
-                    ->required()
-                    ->email()
-                    ->maxLength(255),
+                Section::make('Subscriber details')
+                    ->description('Subscribers receive incident emails only after they confirm their address and stay subscribed.')
+                    ->schema([
+                        TextInput::make('email')
+                            ->required()
+                            ->email()
+                            ->maxLength(255)
+                            ->helperText('Use the address that should receive published incident create, update, and resolve emails.'),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -47,12 +57,20 @@ class SubscriberResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('email'),
-                IconEntry::make('verified_at')
-                    ->boolean()
-                    ->state(fn (Subscriber $record) => filled($record->verified_at)),
-                TextEntry::make('unsubscribed_at')
-                    ->dateTime(),
+                Section::make('Subscriber summary')
+                    ->description('Review whether this recipient is verified and still eligible to receive incident emails.')
+                    ->schema([
+                        TextEntry::make('email')
+                            ->copyable(),
+                        IconEntry::make('verified_at')
+                            ->boolean()
+                            ->state(fn (Subscriber $record) => filled($record->verified_at)),
+                        TextEntry::make('unsubscribed_at')
+                            ->dateTime()
+                            ->placeholder('Still subscribed'),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(2),
             ]);
     }
 
@@ -77,7 +95,8 @@ class SubscriberResource extends Resource
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->slideOver(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
