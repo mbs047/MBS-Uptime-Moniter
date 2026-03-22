@@ -15,6 +15,7 @@ use App\Models\Component;
 use App\Support\Filament\FormDefaults;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -355,20 +356,14 @@ class CheckResource extends Resource
                 //
             ])
             ->recordActions([
-                Action::make('run_now')
-                    ->label('Run now')
-                    ->icon(Heroicon::OutlinedPlay)
-                    ->action(function (Check $record): void {
-                        RunCheckJob::dispatch($record->id, true);
-
-                        Notification::make()
-                            ->title('Check queued for immediate execution.')
-                            ->body('Refresh the record in a moment to review the newest run result and severity.')
-                            ->success()
-                            ->send();
-                    }),
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    static::makeRunNowAction(),
+                    ViewAction::make(),
+                    EditAction::make(),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                    ->button(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -418,5 +413,21 @@ class CheckResource extends Resource
         }
 
         return sprintf('%s %s check', $component->display_name, $typeLabel);
+    }
+
+    public static function makeRunNowAction(): Action
+    {
+        return Action::make('run_now')
+            ->label('Run now')
+            ->icon(Heroicon::OutlinedPlay)
+            ->action(function (Check $record): void {
+                RunCheckJob::dispatch($record->id, true);
+
+                Notification::make()
+                    ->title('Check queued for immediate execution.')
+                    ->body('Refresh the record in a moment to review the newest run result and severity.')
+                    ->success()
+                    ->send();
+            });
     }
 }

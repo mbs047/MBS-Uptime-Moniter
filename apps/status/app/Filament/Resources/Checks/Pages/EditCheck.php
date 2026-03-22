@@ -4,9 +4,11 @@ namespace App\Filament\Resources\Checks\Pages;
 
 use App\Filament\Resources\Checks\CheckResource;
 use App\Services\Checks\CheckConfigValidator;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 
 class EditCheck extends EditRecord
 {
@@ -17,8 +19,14 @@ class EditCheck extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            ActionGroup::make([
+                ViewAction::make(),
+                CheckResource::makeRunNowAction(),
+                DeleteAction::make(),
+            ])
+                ->label('Actions')
+                ->icon(Heroicon::OutlinedEllipsisHorizontal)
+                ->button(),
         ];
     }
 
