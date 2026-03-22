@@ -1,58 +1,120 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MBS Uptime Monitor
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![CI](https://github.com/mbs047/MBS-Uptime-Moniter/actions/workflows/ci.yml/badge.svg)](https://github.com/mbs047/MBS-Uptime-Moniter/actions/workflows/ci.yml)
+[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
+[![License](https://img.shields.io/github/license/mbs047/MBS-Uptime-Moniter)](LICENSE)
 
-## About Laravel
+MBS Uptime Monitor is a self-hosted uptime monitoring and status page application built with Laravel, Filament, and Livewire. It gives teams a branded public status page, operational APIs, incident publishing tools, subscriber notifications, and automated service health rollups in one codebase.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Highlights
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Public status page with service, component, incident, and uptime history views
+- Automated check drivers for HTTP, SSL, DNS, and TCP monitoring
+- Incident publishing workflow with updates, timelines, and severity mapping
+- Subscriber confirmation and unsubscribe flows for status notifications
+- Filament-powered admin panel for services, components, checks, incidents, and settings
+- Daily uptime aggregation and raw check retention jobs for long-term reporting
+- JSON endpoints for summary, services, incidents, and subscriber signups
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack
 
-## Learning Laravel
+- Laravel 13
+- PHP 8.3+
+- Filament 5
+- Livewire 4
+- Vite
+- Tailwind CSS 4
+- PHPUnit 12
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick Start
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
+[ -f database/database.sqlite ] || touch database/database.sqlite
+php artisan migrate --seed
+npm install
+composer run dev
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+In a second terminal, run the scheduler so due checks and uptime maintenance jobs continue to execute locally:
+
+```bash
+php artisan schedule:work
+```
+
+## First Admin Setup
+
+The initial admin bootstrap is protected by `APP_SETUP_TOKEN`.
+
+1. Set a strong `APP_SETUP_TOKEN` value in `.env`.
+2. Start the app locally or deploy it.
+3. Visit `/admin/setup?token=YOUR_TOKEN`.
+4. Submit the bootstrap form to generate the first admin invite.
+5. Complete the invite flow and sign in at `/admin`.
+
+Once the first admin account exists, the bootstrap route is no longer available.
+
+## Available Endpoints
+
+### Public web routes
+
+- `/` - public status page
+- `/incidents/{incident:slug}` - incident detail page
+- `/status/subscribers/confirm/{token}` - subscriber confirmation
+- `/status/subscribers/unsubscribe/{token}` - subscriber unsubscribe
+
+### Public API routes
+
+- `GET /api/status/summary`
+- `GET /api/status/services`
+- `GET /api/status/incidents`
+- `POST /api/status/subscribers`
+
+## Local Development
+
+The repository includes a convenience script that starts the Laravel app, queue worker, log tailing, and Vite dev server together:
+
+```bash
+composer run dev
+```
+
+Useful additional commands:
+
+```bash
+php artisan test
+./vendor/bin/pint --test
+php artisan status:dispatch-due-checks
+php artisan status:refresh-daily-uptime --days=2
+php artisan status:prune-check-runs
+```
+
+## Testing and Quality
+
+Before opening a pull request, run:
+
+```bash
+./vendor/bin/pint --test
+php artisan test
+npm run build
+```
+
+The repository also includes GitHub Actions CI and Dependabot configuration for ongoing maintenance.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
-## Code of Conduct
+## Security
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Please review [SECURITY.md](SECURITY.md) for vulnerability reporting instructions.
 
-## Security Vulnerabilities
+## Support
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Support guidance and repository communication expectations are documented in [SUPPORT.md](SUPPORT.md).
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the [MIT License](LICENSE).

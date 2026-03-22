@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "mbs047/uptime-monitor",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Self-hosted uptime monitoring with public status pages, incidents, and subscriber notifications.",
+    "keywords": ["uptime", "monitoring", "status-page", "laravel", "filament"],
     "license": "MIT",
     "require": {
         "php": "^8.3",
