@@ -21,6 +21,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -130,6 +131,23 @@ class RemoteIntegrationResource extends Resource
                                 ])
                                 ->columnSpanFull()
                                 ->columns(2),
+                            Section::make('TLS')
+                                ->schema([
+                                    Toggle::make('tls_verify')
+                                        ->label('Verify TLS certificates')
+                                        ->default(true)
+                                        ->live()
+                                        ->helperText('Keep this enabled in production. Turn it off only for local or self-signed HTTPS endpoints such as *.test.'),
+                                    TextInput::make('tls_ca_path')
+                                        ->label('Custom CA bundle path')
+                                        ->maxLength(255)
+                                        ->placeholder('/path/to/local-ca.pem')
+                                        ->visible(fn (Get $get): bool => (bool) $get('tls_verify'))
+                                        ->helperText('Optional. Prefer a local CA bundle when you have one, so TLS verification can stay enabled.')
+                                        ->columnSpanFull(),
+                                ])
+                                ->columnSpanFull()
+                                ->columns(2),
                         ]),
                     Step::make('Review')
                         ->description('Check linked records and latest sync state before relying on the generated checks.')
@@ -190,6 +208,14 @@ class RemoteIntegrationResource extends Resource
                         TextEntry::make('auth_mode')
                             ->badge()
                             ->formatStateUsing(fn (?RemoteIntegrationAuthMode $state): ?string => $state?->label()),
+                        TextEntry::make('tls_verify')
+                            ->label('TLS verification')
+                            ->badge()
+                            ->formatStateUsing(fn (?bool $state): string => $state === false ? 'Disabled' : 'Enabled')
+                            ->color(fn (?bool $state): string => $state === false ? 'warning' : 'success'),
+                        TextEntry::make('tls_ca_path')
+                            ->label('Custom CA bundle')
+                            ->placeholder('Using the system CA store'),
                         TextEntry::make('service.name')
                             ->label('Linked service')
                             ->placeholder('Will be created on first sync'),
