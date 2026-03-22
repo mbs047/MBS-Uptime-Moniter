@@ -74,11 +74,13 @@ class ConnectLaravelAppsGuide extends Page
             'monitorUrl' => $monitorUrl,
             'registrationEndpoint' => $monitorUrl.'/api/integrations/probes/register',
             'packageName' => 'mbs047/laravel-status-probe',
+            'packagePackagistUrl' => 'https://packagist.org/packages/mbs047/laravel-status-probe',
             'packageRepositoryUrl' => 'https://github.com/mbs047/MBS-Uptime-Moniter-Package',
             'integrationCreateUrl' => RemoteIntegrationResource::getUrl('create'),
             'settingsUrl' => $this->getSettingsUrl(),
             'hasPushToken' => filled($pushToken),
             'pushToken' => $pushToken,
+            'packageRequireCommand' => 'composer require mbs047/laravel-status-probe',
             'installCommand' => "composer require mbs047/laravel-status-probe\nphp artisan status-probe:install",
             'pushEnvSnippet' => implode(PHP_EOL, [
                 'STATUS_MONITOR_URL='.$monitorUrl,

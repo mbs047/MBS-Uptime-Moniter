@@ -89,6 +89,32 @@
                                         {{ $step['body'] }}
                                     </span>
                                 </div>
+
+                                @if ($loop->first)
+                                    <div style="display: grid; gap: 0.75rem; margin-top: 0.25rem;">
+                                        <x-filament::button
+                                            :href="$packagePackagistUrl"
+                                            tag="a"
+                                            target="_blank"
+                                            color="gray"
+                                            outlined
+                                            :icon="Heroicon::OutlinedArrowTopRightOnSquare"
+                                        >
+                                            View on Packagist
+                                        </x-filament::button>
+
+                                        <div
+                                            style="
+                                                padding: 0.85rem 1rem;
+                                                border-radius: 0.9rem;
+                                                background: rgb(28, 25, 23);
+                                                color: white;
+                                            "
+                                        >
+                                            <code style="display: block; word-break: break-word; font-size: 0.88rem; line-height: 1.7;">{{ $packageRequireCommand }}</code>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>

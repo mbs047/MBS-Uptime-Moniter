@@ -49,6 +49,7 @@ class FilamentAdminGuideTest extends TestCase
 
         $response
             ->assertOk()
+            ->assertSee('https://packagist.org/packages/mbs047/laravel-status-probe')
             ->assertSee('composer require mbs047/laravel-status-probe')
             ->assertSee('php artisan status-probe:register')
             ->assertSee('STATUS_MONITOR_URL=https://status.example.test')
