@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             'raw_run_retention_days' => 14,
             'default_failure_threshold' => 2,
             'default_recovery_threshold' => 1,
+            'probe_registration_token' => null,
         ]);
     }
 }

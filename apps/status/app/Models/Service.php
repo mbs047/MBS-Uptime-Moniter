@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Service extends Model
 {
@@ -45,5 +46,10 @@ class Service extends Model
     public function incidents(): BelongsToMany
     {
         return $this->belongsToMany(Incident::class, 'incident_service');
+    }
+
+    public function remoteIntegration(): HasOne
+    {
+        return $this->hasOne(RemoteIntegration::class);
     }
 }
