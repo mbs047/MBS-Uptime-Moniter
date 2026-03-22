@@ -141,6 +141,14 @@ a {
     font-weight: 500;
 }
 
+.status-nav__button {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
 .status-nav__link:hover,
 .history-entry__link:hover,
 .status-footer__link:hover,
@@ -160,10 +168,7 @@ a {
 }
 
 .status-overview {
-    display: grid;
-    grid-template-columns: minmax(0, 1.7fr) minmax(210px, 0.82fr);
-    gap: 0.8rem;
-    align-items: start;
+    display: block;
     margin-bottom: 0.8rem;
 }
 
@@ -711,6 +716,53 @@ a {
     border-radius: 12px;
     border: 1px solid rgba(25, 125, 87, 0.14);
     background: rgba(25, 125, 87, 0.08);
+    color: var(--ink-900);
+}
+
+.status-modal-open {
+    overflow: hidden;
+}
+
+.status-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.status-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.45);
+    backdrop-filter: blur(6px);
+}
+
+.status-modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(460px, 100%);
+    padding: 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.2);
+}
+
+.status-modal__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.8rem;
+    border: 0;
+    background: transparent;
+    color: var(--ink-500);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.status-modal__close:hover {
     color: var(--ink-900);
 }
 
