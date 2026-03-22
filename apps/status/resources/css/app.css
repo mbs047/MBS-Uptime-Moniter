@@ -387,7 +387,7 @@ a {
     font-size: 1.15rem;
 }
 
-.service-uptime {
+.component-uptime {
     margin-top: 1rem;
     padding: 1rem 1rem 1.05rem;
     border: 1px solid var(--line);
@@ -395,7 +395,7 @@ a {
     background: var(--surface-2);
 }
 
-.service-uptime__header {
+.component-uptime__header {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
@@ -403,24 +403,24 @@ a {
     margin-bottom: 0.8rem;
 }
 
-.service-uptime__label,
-.service-uptime__hint {
+.component-uptime__label,
+.component-uptime__hint {
     color: var(--ink-500);
     font-size: 0.85rem;
 }
 
-.service-uptime__track {
+.component-uptime__track {
     display: grid;
     grid-template-columns: repeat(90, minmax(0, 1fr));
     gap: 0.24rem;
     align-items: end;
 }
 
-.service-uptime__cell {
+.component-uptime__cell {
     position: relative;
 }
 
-.service-uptime__bar {
+.component-uptime__bar {
     display: block;
     width: 100%;
     height: 1.95rem;
@@ -430,36 +430,36 @@ a {
     transition: transform 140ms ease, opacity 140ms ease;
 }
 
-.service-uptime__cell:hover .service-uptime__bar {
+.component-uptime__cell:hover .component-uptime__bar {
     transform: translateY(-1px);
     opacity: 0.92;
 }
 
-.service-uptime__bar--operational {
+.component-uptime__bar--operational {
     background: #2fc19f;
 }
 
-.service-uptime__bar--degraded {
+.component-uptime__bar--degraded {
     background: #f2b32c;
 }
 
-.service-uptime__bar--partial_outage {
+.component-uptime__bar--partial_outage {
     background: #ff8b4d;
 }
 
-.service-uptime__bar--major_outage {
+.component-uptime__bar--major_outage {
     background: #ea6a5f;
 }
 
-.service-uptime__bar--maintenance {
+.component-uptime__bar--maintenance {
     background: #7a93ec;
 }
 
-.service-uptime__bar--no_data {
+.component-uptime__bar--no_data {
     background: #c6d0de;
 }
 
-.service-uptime__tooltip {
+.component-uptime__tooltip {
     position: absolute;
     left: 50%;
     bottom: calc(100% + 0.9rem);
@@ -477,13 +477,13 @@ a {
     pointer-events: none;
 }
 
-.service-uptime__cell:hover .service-uptime__tooltip {
+.component-uptime__cell:hover .component-uptime__tooltip {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
 }
 
-.service-uptime__tooltip::after {
+.component-uptime__tooltip::after {
     content: '';
     position: absolute;
     left: 50%;
@@ -496,30 +496,30 @@ a {
     transform: translateX(-50%) rotate(45deg);
 }
 
-.service-uptime__tooltip-date,
-.service-uptime__tooltip-stat {
+.component-uptime__tooltip-date,
+.component-uptime__tooltip-stat {
     margin: 0;
 }
 
-.service-uptime__tooltip-date {
+.component-uptime__tooltip-date {
     color: var(--ink-500);
     font-size: 0.95rem;
 }
 
-.service-uptime__tooltip-stat {
+.component-uptime__tooltip-stat {
     margin-top: 0.35rem;
     color: var(--ink-950);
     font-size: 1.1rem;
     font-weight: 700;
 }
 
-.service-uptime__tooltip-list {
+.component-uptime__tooltip-list {
     display: grid;
     gap: 0.6rem;
     margin-top: 0.85rem;
 }
 
-.service-uptime__tooltip-item {
+.component-uptime__tooltip-item {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.55rem;
@@ -528,7 +528,7 @@ a {
     line-height: 1.45;
 }
 
-.service-uptime__tooltip-dot {
+.component-uptime__tooltip-dot {
     width: 0.72rem;
     height: 0.72rem;
     margin-top: 0.22rem;
@@ -536,27 +536,27 @@ a {
     background: var(--no-data);
 }
 
-.service-uptime__tooltip-dot--operational {
+.component-uptime__tooltip-dot--operational {
     background: var(--operational);
 }
 
-.service-uptime__tooltip-dot--degraded {
+.component-uptime__tooltip-dot--degraded {
     background: var(--degraded);
 }
 
-.service-uptime__tooltip-dot--partial_outage {
+.component-uptime__tooltip-dot--partial_outage {
     background: var(--partial);
 }
 
-.service-uptime__tooltip-dot--major_outage {
+.component-uptime__tooltip-dot--major_outage {
     background: var(--major);
 }
 
-.service-uptime__tooltip-dot--maintenance {
+.component-uptime__tooltip-dot--maintenance {
     background: var(--maintenance);
 }
 
-.service-uptime__tooltip-dot--no_data {
+.component-uptime__tooltip-dot--no_data {
     background: var(--no-data);
 }
 
@@ -584,11 +584,32 @@ a {
     align-items: center;
 }
 
+.component-item__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: start;
+}
+
 .component-name {
     margin: 0;
     font-size: 1rem;
     font-weight: 700;
     color: var(--ink-950);
+}
+
+.component-item__summary {
+    display: grid;
+    justify-items: end;
+    gap: 0.2rem;
+    color: var(--ink-500);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.component-item__summary strong {
+    color: var(--ink-950);
+    font-size: 1.2rem;
 }
 
 .component-description {
@@ -853,26 +874,31 @@ a {
         white-space: normal;
     }
 
-    .service-uptime__header {
+    .component-item__top,
+    .component-uptime__header {
         flex-direction: column;
         align-items: start;
     }
 
-    .service-uptime__track {
+    .component-item__summary {
+        justify-items: start;
+    }
+
+    .component-uptime__track {
         gap: 0.18rem;
     }
 
-    .service-uptime__tooltip {
+    .component-uptime__tooltip {
         left: 0;
         transform: translateY(0.4rem);
         width: min(280px, 78vw);
     }
 
-    .service-uptime__cell:hover .service-uptime__tooltip {
+    .component-uptime__cell:hover .component-uptime__tooltip {
         transform: translateY(0);
     }
 
-    .service-uptime__tooltip::after {
+    .component-uptime__tooltip::after {
         left: 1rem;
         transform: rotate(45deg);
     }

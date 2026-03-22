@@ -124,14 +124,13 @@ class StatusSummaryService
                 'status' => $service->status?->value ?? ComponentStatus::Operational->value,
                 'component_count' => $service->components->count(),
                 'uptime_90d_percent' => $this->serviceUptimePercentage($service),
-                'uptime_bars' => $this->serviceUptimeBars($service, $windowDays, $publishedIncidents),
                 'components' => $service->components->map(fn (Component $component) => [
                     'id' => $component->id,
                     'display_name' => $component->display_name,
                     'description' => $component->description,
                     'status' => $component->status?->value ?? ComponentStatus::Operational->value,
                     'uptime_90d_percent' => $this->componentUptimePercentage($component),
-                    'uptime_bars' => $this->uptimeBars($component, $windowDays),
+                    'uptime_bars' => $this->componentUptimeBars($component, $service, $windowDays, $publishedIncidents),
                     'active_incidents' => $this->componentIncidentRefs($component, $service, $activeIncidents),
                 ])->values()->all(),
             ];
@@ -179,62 +178,51 @@ class StatusSummaryService
         return $observed > 0 ? round(($healthy / $observed) * 100, 2) : 0;
     }
 
-    protected function serviceUptimeBars(Service $service, int $windowDays, Collection $publishedIncidents): array
+    protected function componentUptimeBars(Component $component, Service $service, int $windowDays, Collection $publishedIncidents): array
     {
         $bars = collect();
-        $dailyByDay = $service->components
-            ->flatMap(fn (Component $component) => $component->dailyUptimes)
-            ->groupBy(fn ($uptime) => $uptime->day->toDateString());
+        $byDay = $component->dailyUptimes->keyBy(fn ($uptime) => $uptime->day->toDateString());
 
         foreach (range($windowDays - 1, 0) as $offset) {
-            $date = Carbon::today(config('app.timezone'))->subDays($offset);
-            $dayKey = $date->toDateString();
-            $dayUptimes = collect($dailyByDay->get($dayKey, []));
-            $healthySlots = $dayUptimes->sum('healthy_slots');
-            $observedSlots = $dayUptimes->sum('observed_slots');
-            $maintenanceSlots = $dayUptimes->sum('maintenance_slots');
-            $percentage = $observedSlots > 0 ? round(($healthySlots / $observedSlots) * 100, 2) : null;
-            $state = $this->resolveUptimeState($percentage, $observedSlots, $maintenanceSlots);
-            $messages = $this->serviceIncidentMessages($service, $date->copy()->startOfDay(), $date->copy()->endOfDay(), $publishedIncidents);
+            $day = Carbon::today(config('app.timezone'))->subDays($offset);
+            $dayKey = $day->toDateString();
+            $uptime = $byDay->get($dayKey);
+
+            if (! $uptime) {
+                $bars->push([
+                    'day' => $dayKey,
+                    'date_label' => $day->format('D, j M Y'),
+                    'state' => 'no_data',
+                    'percentage' => null,
+                    'messages' => [[
+                        'severity' => 'no_data',
+                        'message' => $this->defaultUptimeMessage('no_data'),
+                    ]],
+                ]);
+
+                continue;
+            }
+
+            $state = $this->resolveUptimeState((float) $uptime->uptime_percentage, $uptime->observed_slots, $uptime->maintenance_slots);
+            $messages = $this->componentIncidentMessages(
+                $component,
+                $service,
+                $day->copy()->startOfDay(),
+                $day->copy()->endOfDay(),
+                $publishedIncidents,
+            );
 
             $bars->push([
                 'day' => $dayKey,
-                'date_label' => $date->format('D, j M Y'),
+                'date_label' => $day->format('D, j M Y'),
                 'state' => $state,
-                'percentage' => $percentage,
+                'percentage' => (float) $uptime->uptime_percentage,
                 'messages' => $messages !== []
                     ? $messages
                     : [[
                         'severity' => $state,
                         'message' => $this->defaultUptimeMessage($state),
                     ]],
-            ]);
-        }
-
-        return $bars->all();
-    }
-
-    protected function uptimeBars(Component $component, int $windowDays): array
-    {
-        $bars = collect();
-        $byDay = $component->dailyUptimes->keyBy(fn ($uptime) => $uptime->day->toDateString());
-
-        foreach (range($windowDays - 1, 0) as $offset) {
-            $date = Carbon::today(config('app.timezone'))->subDays($offset)->toDateString();
-            $uptime = $byDay->get($date);
-
-            if (! $uptime) {
-                $bars->push(['day' => $date, 'state' => 'no_data', 'percentage' => null]);
-
-                continue;
-            }
-
-            $state = $this->resolveUptimeState((float) $uptime->uptime_percentage, $uptime->observed_slots, $uptime->maintenance_slots);
-
-            $bars->push([
-                'day' => $date,
-                'state' => $state,
-                'percentage' => (float) $uptime->uptime_percentage,
             ]);
         }
 
@@ -253,14 +241,12 @@ class StatusSummaryService
         };
     }
 
-    protected function serviceIncidentMessages(Service $service, Carbon $dayStart, Carbon $dayEnd, Collection $publishedIncidents): array
+    protected function componentIncidentMessages(Component $component, Service $service, Carbon $dayStart, Carbon $dayEnd, Collection $publishedIncidents): array
     {
-        $componentIds = $service->components->pluck('id');
-
         return $publishedIncidents
-            ->filter(function (Incident $incident) use ($service, $componentIds, $dayStart, $dayEnd): bool {
+            ->filter(function (Incident $incident) use ($component, $service, $dayStart, $dayEnd): bool {
                 $affectsService = $incident->services->contains('id', $service->id)
-                    || $incident->components->pluck('id')->intersect($componentIds)->isNotEmpty();
+                    || $incident->components->contains('id', $component->id);
 
                 return $affectsService && $this->incidentTouchesDay($incident, $dayStart, $dayEnd);
             })
