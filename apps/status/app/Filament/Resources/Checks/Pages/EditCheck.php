@@ -12,6 +12,8 @@ class EditCheck extends EditRecord
 {
     protected static string $resource = CheckResource::class;
 
+    protected ?string $subheading = 'Refine thresholds and expectations carefully. Existing secrets stay encrypted and are only replaced when you enter new values.';
+
     protected function getHeaderActions(): array
     {
         return [

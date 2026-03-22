@@ -10,6 +10,8 @@ class CreateCheck extends CreateRecord
 {
     protected static string $resource = CheckResource::class;
 
+    protected ?string $subheading = 'Use the wizard to define scope, cadence, connection details, and clear success criteria before saving the check.';
+
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>

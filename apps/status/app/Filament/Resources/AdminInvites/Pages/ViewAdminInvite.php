@@ -10,9 +10,12 @@ class ViewAdminInvite extends ViewRecord
 {
     protected static string $resource = AdminInviteResource::class;
 
+    protected ?string $subheading = 'Review the invite state, copy the acceptance link, or resend the invite without leaving the record.';
+
     protected function getHeaderActions(): array
     {
         return [
+            AdminInviteResource::makeResendInviteAction(),
             EditAction::make(),
         ];
     }

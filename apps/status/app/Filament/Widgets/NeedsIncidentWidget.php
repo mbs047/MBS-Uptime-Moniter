@@ -12,6 +12,10 @@ class NeedsIncidentWidget extends TableWidget
 {
     protected static ?string $heading = 'Components needing an incident';
 
+    protected static ?int $sort = 2;
+
+    protected int|string|array $columnSpan = 'full';
+
     public function table(Table $table): Table
     {
         return $table

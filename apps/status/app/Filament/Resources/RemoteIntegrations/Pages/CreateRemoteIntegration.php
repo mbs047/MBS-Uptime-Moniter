@@ -12,6 +12,8 @@ class CreateRemoteIntegration extends CreateRecord
 {
     protected static string $resource = RemoteIntegrationResource::class;
 
+    protected ?string $subheading = 'Use the guided flow to connect a package-enabled Laravel app and sync its metadata into this monitor.';
+
     /**
      * @param  array<string, mixed>  $data
      * @return array<string, mixed>
@@ -35,7 +37,7 @@ class CreateRemoteIntegration extends CreateRecord
         if (blank($this->record->auth_secret)) {
             Notification::make()
                 ->title('Remote integration created.')
-                ->body('Add a bearer token when the remote app requires authentication, then sync.')
+                ->body('Add the remote STATUS_PROBE_TOKEN when the probe endpoints require authentication, then sync.')
                 ->warning()
                 ->send();
 
@@ -47,6 +49,7 @@ class CreateRemoteIntegration extends CreateRecord
 
             Notification::make()
                 ->title('Remote integration created and synced.')
+                ->body('Review the linked service and generated checks to confirm the imported metadata matches the remote app.')
                 ->success()
                 ->send();
         } catch (\Throwable $exception) {

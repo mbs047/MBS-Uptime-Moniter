@@ -12,6 +12,10 @@ class FailingChecksWidget extends TableWidget
 {
     protected static ?string $heading = 'Failing checks';
 
+    protected static ?int $sort = 1;
+
+    protected int|string|array $columnSpan = 'full';
+
     protected ?string $pollingInterval = '30s';
 
     public function table(Table $table): Table

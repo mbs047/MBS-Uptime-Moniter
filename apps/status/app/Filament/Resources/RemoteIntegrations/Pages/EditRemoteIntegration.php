@@ -13,10 +13,13 @@ class EditRemoteIntegration extends EditRecord
 {
     protected static string $resource = RemoteIntegrationResource::class;
 
+    protected ?string $subheading = 'Update connection details here when the remote app changes base URLs, package paths, or authentication secrets.';
+
     protected function getHeaderActions(): array
     {
         return [
             ViewAction::make(),
+            RemoteIntegrationResource::makeSyncNowAction(),
             DeleteAction::make(),
         ];
     }
@@ -60,6 +63,7 @@ class EditRemoteIntegration extends EditRecord
 
             Notification::make()
                 ->title('Remote integration saved and synced.')
+                ->body('The linked service, components, and package-managed checks were refreshed from the remote metadata payload.')
                 ->success()
                 ->send();
         } catch (\Throwable $exception) {
