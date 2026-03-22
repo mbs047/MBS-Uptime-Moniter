@@ -558,14 +558,17 @@ a {
 }
 
 .component-uptime__track {
-    display: grid;
-    grid-template-columns: repeat(90, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: nowrap;
     gap: 0.14rem;
-    align-items: end;
+    align-items: stretch;
+    overflow: hidden;
 }
 
 .component-uptime__cell {
     position: relative;
+    flex: 1 1 0;
+    min-width: 0;
 }
 
 .component-uptime__bar {
@@ -1140,20 +1143,12 @@ a {
 }
 
 @media (max-width: 720px) {
-    .component-uptime__track {
-        grid-template-columns: repeat(45, minmax(0, 1fr));
-    }
-
     .component-uptime__cell:nth-child(even) {
         display: none;
     }
 }
 
 @media (max-width: 560px) {
-    .component-uptime__track {
-        grid-template-columns: repeat(30, minmax(0, 1fr));
-    }
-
     .component-uptime__cell {
         display: none;
     }
@@ -1165,7 +1160,6 @@ a {
 
 @media (max-width: 400px) {
     .component-uptime__track {
-        grid-template-columns: repeat(23, minmax(0, 1fr));
         gap: 0.16rem;
     }
 
