@@ -54,6 +54,52 @@ jobs:
       - name: Run test suite
         run: php artisan test
 
+  probe-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: "8.2"
+            laravel: "^11.0"
+            testbench: "^9.0"
+          - php: "8.3"
+            laravel: "^12.0"
+            testbench: "^10.0"
+          - php: "8.4"
+            laravel: "^13.0"
+            testbench: "^11.0"
+    defaults:
+      run:
+        working-directory: packages/laravel-status-probe
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: sqlite, pdo_sqlite
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-probe-composer-${{ matrix.php }}-${{ matrix.laravel }}-${{ hashFiles('packages/laravel-status-probe/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-probe-composer-${{ matrix.php }}-${{ matrix.laravel }}-
+            ${{ runner.os }}-probe-composer-
+
+      - name: Resolve package test dependencies
+        run: composer update --no-interaction --no-progress --prefer-dist --with laravel/framework:${{ matrix.laravel }} --with orchestra/testbench:${{ matrix.testbench }}
+
+      - name: Run package test suite
+        run: composer test
+
   frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 10

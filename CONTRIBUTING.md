@@ -28,6 +28,7 @@ make status-artisan CMD="schedule:work"
 ## Development Expectations
 
 - Follow the existing Laravel and Filament project structure inside `apps/status`.
+- Keep package work inside `packages/laravel-status-probe`.
 - Add or update tests for behavior changes when practical.
 - Keep code style consistent with Laravel conventions and `pint`.
 - Update documentation when setup steps, API behavior, or product capabilities change.
@@ -41,6 +42,7 @@ Run these before submitting a pull request:
 make status-pint
 make status-test
 make status-build
+make probe-test
 ```
 
 ## Pull Request Checklist
