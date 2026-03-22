@@ -31,6 +31,7 @@ class HttpCheckDriver implements CheckDriver
             'max_latency_ms' => $config['max_latency_ms'] ?? null,
             'text_contains' => $config['text_contains'] ?? null,
             'json_assertions' => array_values($config['json_assertions'] ?? []),
+            'status_json_path' => $config['status_json_path'] ?? null,
             'auth_type' => $config['auth_type'] ?? null,
             'secret_username' => $secretConfig['username'] ?? null,
             'secret_password' => $secretConfig['password'] ?? null,
@@ -45,6 +46,7 @@ class HttpCheckDriver implements CheckDriver
             'text_contains' => ['nullable', 'string'],
             'json_assertions' => ['array'],
             'json_assertions.*.path' => ['required_with:json_assertions', 'string'],
+            'status_json_path' => ['nullable', 'string'],
             'auth_type' => ['nullable', 'in:basic,bearer'],
             'secret_username' => ['required_if:auth_type,basic', 'nullable', 'string'],
             'secret_password' => ['required_if:auth_type,basic', 'nullable', 'string'],
@@ -99,6 +101,51 @@ class HttpCheckDriver implements CheckDriver
                 resultPayload: $payload,
                 errorPayload: ['message' => 'Unexpected HTTP status code.'],
             );
+        }
+
+        if (filled($config['status_json_path'] ?? null)) {
+            $decoded = $response->json();
+            $statusValue = data_get($decoded, (string) $config['status_json_path']);
+            $severity = ComponentStatus::tryFrom((string) $statusValue);
+
+            if (! $severity || $severity === ComponentStatus::Maintenance) {
+                return new CheckExecutionResult(
+                    outcome: CheckRunOutcome::HardFailed,
+                    severity: ComponentStatus::MajorOutage,
+                    statusCode: $response->status(),
+                    latencyMs: $latencyMs,
+                    resultPayload: $payload,
+                    errorPayload: ['message' => sprintf('JSON status path [%s] did not resolve to a supported status.', $config['status_json_path'])],
+                );
+            }
+
+            if ($severity === ComponentStatus::Degraded) {
+                return new CheckExecutionResult(
+                    outcome: CheckRunOutcome::SoftFailed,
+                    severity: $severity,
+                    statusCode: $response->status(),
+                    latencyMs: $latencyMs,
+                    resultPayload: array_merge($payload, [
+                        'status_json_path' => $config['status_json_path'],
+                        'status_value' => $severity->value,
+                    ]),
+                    errorPayload: ['message' => sprintf('Remote status path [%s] reported [%s].', $config['status_json_path'], $severity->value)],
+                );
+            }
+
+            if (in_array($severity, [ComponentStatus::PartialOutage, ComponentStatus::MajorOutage], true)) {
+                return new CheckExecutionResult(
+                    outcome: CheckRunOutcome::HardFailed,
+                    severity: $severity,
+                    statusCode: $response->status(),
+                    latencyMs: $latencyMs,
+                    resultPayload: array_merge($payload, [
+                        'status_json_path' => $config['status_json_path'],
+                        'status_value' => $severity->value,
+                    ]),
+                    errorPayload: ['message' => sprintf('Remote status path [%s] reported [%s].', $config['status_json_path'], $severity->value)],
+                );
+            }
         }
 
         if (($config['max_latency_ms'] ?? null) && $latencyMs > (int) $config['max_latency_ms']) {
