@@ -19,7 +19,8 @@ class ViewAdminInvite extends ViewRecord
         return [
             ActionGroup::make([
                 AdminInviteResource::makeResendInviteAction(),
-                EditAction::make(),
+                EditAction::make()
+                    ->slideOver(),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::OutlinedEllipsisHorizontal)

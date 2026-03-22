@@ -22,7 +22,8 @@ class ListAdminInvites extends ListRecords
             ActionGroup::make([
                 CreateAction::make()
                     ->label('Send invite')
-                    ->icon(Heroicon::OutlinedEnvelopeOpen),
+                    ->icon(Heroicon::OutlinedEnvelopeOpen)
+                    ->slideOver(),
                 Action::make('view_admins')
                     ->label('View admins')
                     ->icon(Heroicon::OutlinedShieldCheck)

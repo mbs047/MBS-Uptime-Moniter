@@ -137,7 +137,8 @@ class AdminInviteResource extends Resource
                 ActionGroup::make([
                     static::makeResendInviteAction(),
                     ViewAction::make(),
-                    EditAction::make(),
+                    EditAction::make()
+                        ->slideOver(),
                 ])
                     ->label('Actions')
                     ->icon(Heroicon::OutlinedEllipsisHorizontal)
