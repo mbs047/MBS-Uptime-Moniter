@@ -21,6 +21,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -34,6 +35,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Throwable;
 use UnitEnum;
 
 class RemoteIntegrationResource extends Resource
@@ -130,6 +132,23 @@ class RemoteIntegrationResource extends Resource
                                 ])
                                 ->columnSpanFull()
                                 ->columns(2),
+                            Section::make('TLS')
+                                ->schema([
+                                    Toggle::make('tls_verify')
+                                        ->label('Verify TLS certificates')
+                                        ->default(true)
+                                        ->live()
+                                        ->helperText('Keep this enabled in production. Turn it off only for local or self-signed HTTPS endpoints such as *.test.'),
+                                    TextInput::make('tls_ca_path')
+                                        ->label('Custom CA bundle path')
+                                        ->maxLength(255)
+                                        ->placeholder('/path/to/local-ca.pem')
+                                        ->visible(fn (Get $get): bool => (bool) $get('tls_verify'))
+                                        ->helperText('Optional. Prefer a local CA bundle when you have one, so TLS verification can stay enabled.')
+                                        ->columnSpanFull(),
+                                ])
+                                ->columnSpanFull()
+                                ->columns(2),
                         ]),
                     Step::make('Review')
                         ->description('Check linked records and latest sync state before relying on the generated checks.')
@@ -166,7 +185,7 @@ class RemoteIntegrationResource extends Resource
                 ])
                     ->persistStepInQueryString('integration-step')
                     ->skippable(),
-            ]);
+            ])->columns(1);
     }
 
     public static function infolist(Schema $schema): Schema
@@ -190,6 +209,14 @@ class RemoteIntegrationResource extends Resource
                         TextEntry::make('auth_mode')
                             ->badge()
                             ->formatStateUsing(fn (?RemoteIntegrationAuthMode $state): ?string => $state?->label()),
+                        TextEntry::make('tls_verify')
+                            ->label('TLS verification')
+                            ->badge()
+                            ->formatStateUsing(fn (?bool $state): string => $state === false ? 'Disabled' : 'Enabled')
+                            ->color(fn (?bool $state): string => $state === false ? 'warning' : 'success'),
+                        TextEntry::make('tls_ca_path')
+                            ->label('Custom CA bundle')
+                            ->placeholder('Using the system CA store'),
                         TextEntry::make('service.name')
                             ->label('Linked service')
                             ->placeholder('Will be created on first sync'),
@@ -271,14 +298,25 @@ class RemoteIntegrationResource extends Resource
                         ->body('The linked service, remote components, and package-managed checks were refreshed from the metadata payload.')
                         ->success()
                         ->send();
-                } catch (\Throwable $exception) {
+                } catch (Throwable $exception) {
                     Notification::make()
                         ->title('Remote integration sync failed.')
-                        ->body($exception->getMessage())
+                        ->body(static::describeSyncFailure($exception))
                         ->danger()
                         ->send();
                 }
             });
+    }
+
+    public static function describeSyncFailure(Throwable $exception): string
+    {
+        $message = $exception->getMessage();
+
+        if (! static::looksLikeTlsFailure($message)) {
+            return $message;
+        }
+
+        return 'TLS connect error: For local or self-signed HTTPS endpoints such as *.test, open Endpoints & auth -> TLS and either disable Verify TLS certificates or set a Custom CA bundle path.';
     }
 
     /**
@@ -313,5 +351,17 @@ class RemoteIntegrationResource extends Resource
             ->replace(['www.', '.'], [' ', ' '])
             ->headline()
             ->value();
+    }
+
+    protected static function looksLikeTlsFailure(string $message): bool
+    {
+        return Str::contains(Str::lower($message), [
+            'tls connect error',
+            'ssl certificate problem',
+            'self-signed certificate',
+            'certificate verify failed',
+            'curl error 35',
+            'curl error 60',
+        ]);
     }
 }
