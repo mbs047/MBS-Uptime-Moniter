@@ -72,11 +72,12 @@ php artisan migrate --force
 php artisan optimize:clear
 ```
 
-If you deploy from the repository root, use the root wrappers where helpful:
+If you deploy from the repository root, run the commands inside `apps/status`:
 
 ```bash
-make status-build
-make status-artisan CMD="migrate --force"
+cd apps/status
+npm run build
+php artisan migrate --force
 ```
 
 ## First Production Bootstrap
@@ -183,14 +184,6 @@ php artisan status:refresh-daily-uptime --days=2
 php artisan status:prune-check-runs
 php artisan route:list
 php artisan about
-```
-
-From the repo root:
-
-```bash
-make status-artisan CMD="status:dispatch-due-checks"
-make status-artisan CMD="status:refresh-daily-uptime --days=2"
-make status-artisan CMD="status:prune-check-runs"
 ```
 
 ## Backups and Data Retention

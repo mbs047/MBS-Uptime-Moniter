@@ -88,21 +88,24 @@ The package is also published from its own repository:
 ### Local Install
 
 ```bash
-make status-install
-cp apps/status/.env.example apps/status/.env
-[ -f apps/status/database/database.sqlite ] || touch apps/status/database/database.sqlite
-make status-artisan CMD="key:generate"
-make status-artisan CMD="migrate --seed"
-make status-dev
+cd apps/status
+composer install
+npm install
+cp .env.example .env
+[ -f database/database.sqlite ] || touch database/database.sqlite
+php artisan key:generate
+php artisan migrate --seed
+composer run dev
 ```
 
 In a second terminal, run the scheduler:
 
 ```bash
-make status-artisan CMD="schedule:work"
+cd apps/status
+php artisan schedule:work
 ```
 
-`make status-dev` already starts:
+`composer run dev` already starts:
 
 - the Laravel development server
 - a queue listener
@@ -184,10 +187,13 @@ For the full walkthrough, see:
 Before opening a pull request, run:
 
 ```bash
-make status-pint
-make status-test
-make status-build
-make probe-test
+cd apps/status
+./vendor/bin/pint --test
+php artisan test
+npm run build
+
+cd ../../packages/laravel-status-probe
+composer test
 ```
 
 ## Deployment Note
