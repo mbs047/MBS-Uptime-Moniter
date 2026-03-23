@@ -1,11 +1,30 @@
 name: Bug report
 description: Report a reproducible bug, regression, or unexpected behavior
 title: "[Bug]: "
+labels:
+  - bug
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for reporting an issue. Please fill out the details below so the problem can be reproduced and triaged efficiently.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      description: Pick the main part of the product where the bug appears.
+      options:
+        - Public status pages
+        - Filament admin panel
+        - Check engine and jobs
+        - Incidents and subscriber notifications
+        - Remote integrations
+        - Laravel status probe package
+        - Documentation
+        - CI or developer tooling
+    validations:
+      required: true
 
   - type: input
     id: summary
@@ -60,8 +79,30 @@ body:
       required: true
 
   - type: textarea
+    id: checks
+    attributes:
+      label: Relevant commands already tried
+      description: Share commands you already ran while diagnosing the issue.
+      placeholder: |
+        php artisan about
+        php artisan queue:work
+        php artisan schedule:work
+        php artisan status:dispatch-due-checks
+      render: shell
+
+  - type: textarea
     id: logs
     attributes:
       label: Relevant logs or screenshots
       description: Paste logs, stack traces, API responses, or screenshots if available.
       render: shell
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and did not find the same report.
+          required: true
+        - label: I included enough detail to reproduce or investigate the issue.
+          required: true

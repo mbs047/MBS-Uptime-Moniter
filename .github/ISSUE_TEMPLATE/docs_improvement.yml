@@ -1,6 +1,8 @@
 name: Documentation improvement
 description: Suggest improvements to setup guides, examples, or project docs
 title: "[Docs]: "
+labels:
+  - documentation
 body:
   - type: markdown
     attributes:
@@ -31,3 +33,23 @@ body:
       description: Share the change you would like to see.
     validations:
       required: true
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Who is blocked by this doc gap?
+      options:
+        - First-time installers
+        - Operators and admins
+        - Developers contributing to the repo
+        - Teams integrating remote Laravel apps
+        - Package users
+        - API consumers
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I checked the README, wiki, and docs folder before opening this request.
+          required: true

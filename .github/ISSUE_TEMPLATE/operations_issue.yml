@@ -1,0 +1,87 @@
+name: Deployment or runtime issue
+description: Report a production, queue, scheduler, mail, or environment problem
+title: "[Ops]: "
+labels:
+  - operations
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for deployment, queue, scheduler, mail, database, and runtime environment problems.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: Checks never execute even though the queue worker is running
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment_type
+    attributes:
+      label: Environment type
+      options:
+        - Local development
+        - Staging
+        - Production
+        - CI
+    validations:
+      required: true
+
+  - type: textarea
+    id: stack
+    attributes:
+      label: Runtime stack
+      description: Include hosting, PHP version, queue driver, database, scheduler setup, and mail transport.
+      placeholder: |
+        Host: Forge / Ploi / VPS / Docker
+        PHP: 8.3
+        Queue: database
+        Database: MySQL 8
+        Scheduler: cron every minute
+        Mail: SMTP
+    validations:
+      required: true
+
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: Symptoms
+      description: What behavior are you seeing?
+      placeholder: |
+        - Queue jobs stay pending
+        - No new check_runs are created
+        - Subscriber emails are not sent
+    validations:
+      required: true
+
+  - type: textarea
+    id: commands
+    attributes:
+      label: Relevant commands and outputs
+      description: Include command output that helps narrow down the issue.
+      placeholder: |
+        php artisan about
+        php artisan queue:work
+        php artisan schedule:work
+        php artisan status:dispatch-due-checks
+      render: shell
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or traces
+      description: Paste queue failures, stack traces, web server logs, or screenshots.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Quick checks
+      options:
+        - label: I confirmed the queue worker is running.
+        - label: I confirmed the Laravel scheduler runs every minute.
+        - label: I confirmed the app environment variables are loaded as expected.
+        - label: I searched existing operations issues before opening this one.
+          required: true
