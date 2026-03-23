@@ -1,0 +1,90 @@
+name: Remote integration issue
+description: Report a problem importing, syncing, or authenticating a monitored Laravel app
+title: "[Integration]: "
+labels:
+  - integrations
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for problems with Remote Integrations, metadata sync, TLS, auth, or the `laravel-status-probe` package connecting to the monitor.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: Sync now fails against a local .test domain with TLS errors
+    validations:
+      required: true
+
+  - type: dropdown
+    id: flow
+    attributes:
+      label: Integration flow
+      description: Which connection path is failing?
+      options:
+        - Pull sync from the monitor
+        - Push registration from the remote app
+        - Hybrid flow
+        - I am not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: remote_context
+    attributes:
+      label: Remote app setup
+      description: Describe the monitored app and its package setup.
+      placeholder: |
+        Laravel: 12.x
+        Package version: 0.2.0
+        APP_URL: https://billing.test
+        Health path: /status/health
+        Metadata path: /status/metadata
+    validations:
+      required: true
+
+  - type: textarea
+    id: monitor_context
+    attributes:
+      label: Monitor setup
+      description: Describe the integration record and relevant monitor-side settings.
+      placeholder: |
+        Monitor branch: main
+        Base URL: https://billing.test
+        Auth mode: bearer
+        TLS verify: disabled
+        Custom CA path: not set
+    validations:
+      required: true
+
+  - type: textarea
+    id: commands
+    attributes:
+      label: Commands and responses
+      description: Share the exact command, sync action, and error output.
+      placeholder: |
+        php artisan status-probe:register --insecure
+        Remote integration sync failed...
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Quick checks
+      options:
+        - label: I verified the remote app is reachable from the monitor host.
+        - label: I verified the bearer token or monitor token being used.
+        - label: I reviewed the TLS settings for local or self-signed domains.
+        - label: I searched existing integration issues before opening this one.
+          required: true

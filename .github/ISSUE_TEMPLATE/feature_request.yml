@@ -1,11 +1,30 @@
 name: Feature request
 description: Propose an improvement, enhancement, or new capability
 title: "[Feature]: "
+labels:
+  - enhancement
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for sharing an idea. The more concrete the proposal, the easier it is to evaluate and implement.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Product area
+      description: Which part of the project should change?
+      options:
+        - Public status pages
+        - Filament admin panel
+        - Check engine and uptime logic
+        - Incidents and notifications
+        - Remote integrations
+        - Laravel status probe package
+        - API and embeds
+        - Documentation or onboarding
+    validations:
+      required: true
 
   - type: textarea
     id: problem
@@ -33,6 +52,18 @@ body:
       required: true
 
   - type: textarea
+    id: success
+    attributes:
+      label: What would success look like?
+      description: Describe the expected user-visible outcome or acceptance criteria.
+      placeholder: |
+        - Operators can...
+        - The public page shows...
+        - The API returns...
+    validations:
+      required: true
+
+  - type: textarea
     id: alternatives
     attributes:
       label: Alternatives considered
@@ -43,3 +74,11 @@ body:
     attributes:
       label: Additional context
       description: Add examples, screenshots, references, or implementation notes that would help.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and discussions for a similar request.
+          required: true
