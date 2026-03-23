@@ -100,6 +100,7 @@ The application schedule is defined in `apps/status/routes/console.php`.
 Current scheduled tasks:
 
 - `status:dispatch-due-checks` every minute
+- `status:refresh-daily-uptime --days=1` hourly at `:10`
 - `status:refresh-daily-uptime --days=2` daily at `00:05`
 - `status:prune-check-runs` daily at `00:15`
 
