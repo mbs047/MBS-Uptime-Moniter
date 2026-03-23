@@ -24,11 +24,13 @@ The default local environment in `apps/status/.env.example` uses:
 From the repository root:
 
 ```bash
-make status-install
-cp apps/status/.env.example apps/status/.env
-[ -f apps/status/database/database.sqlite ] || touch apps/status/database/database.sqlite
-make status-artisan CMD="key:generate"
-make status-artisan CMD="migrate --seed"
+cd apps/status
+composer install
+npm install
+cp .env.example .env
+[ -f database/database.sqlite ] || touch database/database.sqlite
+php artisan key:generate
+php artisan migrate --seed
 ```
 
 If you prefer MySQL or PostgreSQL, update `apps/status/.env` before running the
@@ -58,7 +60,8 @@ Review these before the first boot:
 Run the application stack:
 
 ```bash
-make status-dev
+cd apps/status
+composer run dev
 ```
 
 This starts:
@@ -71,7 +74,8 @@ This starts:
 In another terminal, run the scheduler:
 
 ```bash
-make status-artisan CMD="schedule:work"
+cd apps/status
+php artisan schedule:work
 ```
 
 The scheduler is required because it dispatches checks every minute and runs the
@@ -123,12 +127,13 @@ After setup, verify the main routes:
 Useful commands while verifying behavior:
 
 ```bash
-make status-test
-make status-pint
-make status-build
-make status-artisan CMD="status:dispatch-due-checks"
-make status-artisan CMD="status:refresh-daily-uptime --days=2"
-make status-artisan CMD="status:prune-check-runs"
+cd apps/status
+php artisan test
+./vendor/bin/pint --test
+npm run build
+php artisan status:dispatch-due-checks
+php artisan status:refresh-daily-uptime --days=2
+php artisan status:prune-check-runs
 ```
 
 ## Typical First Monitor Setup
@@ -157,10 +162,11 @@ See [monitoring-laravel-apps.md](monitoring-laravel-apps.md) for the full flow.
 Make sure the scheduler is running:
 
 ```bash
-make status-artisan CMD="schedule:work"
+cd apps/status
+php artisan schedule:work
 ```
 
-Also confirm the queue listener is running. `make status-dev` starts one
+Also confirm the queue listener is running. `composer run dev` starts one
 locally.
 
 ### Admin setup says the token is invalid
