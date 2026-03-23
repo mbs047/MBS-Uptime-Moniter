@@ -14,6 +14,25 @@ This repository is a workspace repo. The monitor application lives in
 `apps/status`, while the repository root is reserved for shared documentation,
 API contracts, GitHub automation, and package publishing support.
 
+## Screenshots
+
+### Public status overview
+
+![Public status overview](documents/screenshots/status-overview.png)
+
+### Public history and incident detail
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="documents/screenshots/history-page.png" alt="Published incident history page" />
+    </td>
+    <td width="50%">
+      <img src="documents/screenshots/incident-detail.png" alt="Incident detail page with timeline updates" />
+    </td>
+  </tr>
+</table>
+
 ## What This Repository Contains
 
 - `apps/status`
