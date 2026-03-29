@@ -4937,16 +4937,16 @@
         },
         {
             "name": "resend/resend-laravel",
-            "version": "v1.3.1",
+            "version": "v1.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/resend/resend-laravel.git",
-                "reference": "c78a042d1fccc31ffa0d3dbbbf0c421e3fd0043d"
+                "reference": "49773f31e9e7753f596f8459b6a8200525ffde0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/resend/resend-laravel/zipball/c78a042d1fccc31ffa0d3dbbbf0c421e3fd0043d",
-                "reference": "c78a042d1fccc31ffa0d3dbbbf0c421e3fd0043d",
+                "url": "https://api.github.com/repos/resend/resend-laravel/zipball/49773f31e9e7753f596f8459b6a8200525ffde0c",
+                "reference": "49773f31e9e7753f596f8459b6a8200525ffde0c",
                 "shasum": ""
             },
             "require": {
@@ -4954,7 +4954,7 @@
                 "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
                 "php": "^8.1",
                 "resend/resend-php": "^1.0.0",
-                "symfony/mailer": "^6.2|^7.0"
+                "symfony/mailer": "^6.2|^7.0|^8.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.14",
@@ -5000,9 +5000,9 @@
             ],
             "support": {
                 "issues": "https://github.com/resend/resend-laravel/issues",
-                "source": "https://github.com/resend/resend-laravel/tree/v1.3.1"
+                "source": "https://github.com/resend/resend-laravel/tree/v1.3.2"
             },
-            "time": "2026-03-07T11:50:48+00:00"
+            "time": "2026-03-27T02:11:50+00:00"
         },
         {
             "name": "resend/resend-php",
